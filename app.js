@@ -41,6 +41,7 @@ function bindEvents() {
     renderPlayers();
   });
   el("schedule-canvas").addEventListener("click", onScheduleClick);
+  el("booking-detail").addEventListener("click", onBookingPlayerClick);
 
   el("open-login").addEventListener("click", () => el("login-dialog").showModal());
   el("open-admin").addEventListener("click", () => el("admin").scrollIntoView({ behavior: "smooth" }));
@@ -301,9 +302,25 @@ function onScheduleClick(event) {
     incidental: "Insidental",
     basket: "Basket",
   };
+  const matchedPlayers = bookingPlayers(booking);
   el("booking-detail").innerHTML = `
     <p class="eyebrow dark">Lapangan ${escapeHtml(booking.court_id)}</p>
     <h2>${escapeHtml(booking.title)}</h2>
+    ${matchedPlayers.length ? `
+      <div class="booking-players">
+        <p class="booking-players-label">Pemain · ketuk nama untuk melihat alamat</p>
+        <div class="booking-player-list">
+          ${matchedPlayers.map((player) => `
+            <div class="booking-player-entry">
+              <button class="booking-player-button" type="button" data-player-address="${escapeHtml(player.id)}" aria-expanded="false" aria-controls="booking-player-address-${escapeHtml(player.id)}">
+                <span class="booking-player-initial">${escapeHtml(initials(player.full_name))}</span>
+                <span>${escapeHtml(player.full_name)}</span>
+                <span aria-hidden="true">⌄</span>
+              </button>
+              <div class="booking-player-address hidden" id="booking-player-address-${escapeHtml(player.id)}">${escapeHtml(playerAddressLabel(player))}</div>
+            </div>`).join("")}
+        </div>
+      </div>` : `<p class="booking-player-unmatched">Nama booking ini belum terhubung dengan database pemain.</p>`}
     <div class="booking-detail-grid">
       <div class="booking-detail-item"><span>Waktu</span><strong>${escapeHtml(formatDateTime(booking.start_at))}–${escapeHtml(formatTime(booking.end_at))}</strong></div>
       <div class="booking-detail-item"><span>Jenis</span><strong>${escapeHtml(labels[booking.booking_type] || booking.booking_type)}</strong></div>
@@ -312,6 +329,47 @@ function onScheduleClick(event) {
     </div>
     ${booking.notes ? `<p class="detail-notes"><strong>Catatan:</strong> ${escapeHtml(booking.notes)}</p>` : ""}`;
   el("booking-dialog").showModal();
+}
+
+function bookingPlayers(booking) {
+  const normalize = (value) => String(value || "")
+    .toLocaleLowerCase("id-ID")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+  const title = normalize(booking.title);
+  const candidates = state.players.filter((player) => !normalize(player.full_name).startsWith("vtc "));
+  const exact = candidates.filter((player) => normalize(player.full_name) === title);
+  if (exact.length === 1) return exact;
+
+  const ignored = new Set(["vtc", "court", "lapangan", "mabar", "warga", "private", "coaching"]);
+  const tokens = [...new Set(title.split(" ").filter((token) => token.length >= 3 && !ignored.has(token)))];
+  const matches = [];
+  tokens.forEach((token) => {
+    const firstNameMatches = candidates.filter((player) => {
+      const firstName = normalize(player.full_name).split(" ")[0];
+      return firstName === token || (token.length >= 4 && (firstName.startsWith(token) || token.startsWith(firstName)));
+    });
+    const exactWordMatches = candidates.filter((player) => normalize(player.full_name).split(" ").includes(token));
+    const prefixMatches = exactWordMatches.length ? [] : candidates.filter((player) =>
+      token.length >= 4 && normalize(player.full_name).split(" ").some((word) => word.startsWith(token) || token.startsWith(word))
+    );
+    const tokenMatches = firstNameMatches.length === 1 ? firstNameMatches : exactWordMatches.length === 1 ? exactWordMatches : prefixMatches.length === 1 ? prefixMatches : [];
+    tokenMatches.forEach((player) => {
+      if (!matches.some((match) => String(match.id) === String(player.id))) matches.push(player);
+    });
+  });
+  return matches;
+}
+
+function onBookingPlayerClick(event) {
+  const button = event.target.closest("[data-player-address]");
+  if (!button) return;
+  const address = el(`booking-player-address-${button.dataset.playerAddress}`);
+  if (!address) return;
+  const willOpen = address.classList.contains("hidden");
+  address.classList.toggle("hidden", !willOpen);
+  button.setAttribute("aria-expanded", String(willOpen));
+  button.classList.toggle("open", willOpen);
 }
 
 async function loadPlayers() {
