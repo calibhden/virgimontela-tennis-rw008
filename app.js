@@ -55,9 +55,11 @@ function bindEvents() {
   el("reset-booking-form").addEventListener("click", resetBookingForm);
   el("refresh-admin-bookings").addEventListener("click", loadAdminBookings);
   el("admin-booking-list").addEventListener("click", onAdminBookingAction);
-  el("player-form").addEventListener("submit", addPlayer);
+  el("player-form").addEventListener("submit", savePlayer);
+  el("reset-player-form").addEventListener("click", resetPlayerForm);
   el("refresh-admin-players").addEventListener("click", loadAdminPlayers);
   el("admin-player-search").addEventListener("input", renderAdminPlayers);
+  el("admin-player-list").addEventListener("click", onAdminPlayerAction);
   el("refresh-access").addEventListener("click", loadAccessList);
   el("access-list").addEventListener("click", onAccessAction);
 }
@@ -551,7 +553,7 @@ async function loadAdminPlayers() {
   try {
     const [players, privateRows] = await Promise.all([
       api("players?select=id,full_name,is_active&order=full_name.asc", { authenticated: true }),
-      api("player_private?select=player_id,residence,booking_reputation,phone,in_whatsapp", { authenticated: true }),
+      api("player_private?select=player_id,residence,booking_reputation,email,phone,player_status,in_whatsapp", { authenticated: true }),
     ]);
     const privateMap = new Map(privateRows.map((row) => [row.player_id, row]));
     state.adminPlayers = players.map((player) => ({ ...player, ...(privateMap.get(player.id) || {}) }));
@@ -563,42 +565,98 @@ async function loadAdminPlayers() {
 
 function renderAdminPlayers() {
   const query = el("admin-player-search").value.trim().toLocaleLowerCase("id-ID");
-  const rows = state.adminPlayers.filter((player) => `${player.full_name} ${player.residence || ""}`.toLocaleLowerCase("id-ID").includes(query));
+  const rows = state.adminPlayers.filter((player) => `${player.full_name} ${player.residence || ""} ${player.player_status || ""} ${player.email || ""} ${player.phone || ""}`.toLocaleLowerCase("id-ID").includes(query));
   el("admin-player-list").innerHTML = rows.length ? rows.map((player) => `
     <div class="admin-list-item">
       <div class="admin-list-main">
-        <div><strong>${escapeHtml(player.full_name)}</strong><p>${escapeHtml(player.residence || "Alamat belum dicatat")} · ${escapeHtml(player.phone || "Telepon belum dicatat")}</p></div>
-        <span class="badge ${player.booking_reputation === "Clear" ? "" : "pending"}">${escapeHtml(player.booking_reputation || "Clear")}</span>
+        <div>
+          <strong>${escapeHtml(player.full_name)}</strong>
+          <p>${escapeHtml(player.residence || "Tempat tinggal belum dicatat")} · ${escapeHtml(player.email || "Email belum dicatat")}</p>
+          <p>${escapeHtml(player.phone || "No. HP belum dicatat")} · ${escapeHtml(player.booking_reputation || "Clear")}</p>
+        </div>
+        <span class="badge ${player.player_status ? "" : "pending"}">${escapeHtml(playerStatusLabel(player.player_status))}</span>
       </div>
+      <div class="admin-list-actions"><button class="mini-button" type="button" data-edit-player="${escapeHtml(player.id)}">Edit data</button></div>
     </div>`).join("") : `<p class="empty-state">Tidak ada data yang cocok.</p>`;
 }
 
-async function addPlayer(event) {
+function playerStatusLabel(status) {
+  return { pemilik: "Pemilik", penyewa: "Penyewa", pelatih: "Pelatih" }[status] || "Status belum dicatat";
+}
+
+function onAdminPlayerAction(event) {
+  const button = event.target.closest("[data-edit-player]");
+  if (button) editPlayer(button.dataset.editPlayer);
+}
+
+function editPlayer(id) {
+  const player = state.adminPlayers.find((item) => String(item.id) === String(id));
+  if (!player) return;
+  el("player-id").value = player.id;
+  el("player-name").value = player.full_name || "";
+  el("player-residence").value = player.residence || "";
+  el("player-status").value = player.player_status || "";
+  el("player-email").value = player.email || "";
+  el("player-phone").value = player.phone || "";
+  el("player-reputation").value = player.booking_reputation || "Clear";
+  el("player-whatsapp").value = player.in_whatsapp == null ? "" : String(player.in_whatsapp);
+  el("player-form-title").textContent = "Edit pemain";
+  el("player-submit-label").textContent = "Simpan perubahan";
+  el("reset-player-form").classList.remove("hidden");
+  setMessage(el("player-message"), "");
+  el("player-form").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function resetPlayerForm() {
+  el("player-form").reset();
+  el("player-id").value = "";
+  el("player-reputation").value = "Clear";
+  el("player-form-title").textContent = "Tambah pemain";
+  el("player-submit-label").textContent = "Tambah pemain";
+  el("reset-player-form").classList.add("hidden");
+  setMessage(el("player-message"), "");
+}
+
+async function savePlayer(event) {
   event.preventDefault();
   const message = el("player-message");
   setMessage(message, "Menyimpan…");
   try {
-    const created = await api("players?select=id,full_name", {
-      method: "POST",
-      body: { full_name: el("player-name").value.trim() },
-      prefer: "return=representation",
-      authenticated: true,
-    });
-    await api("player_private", {
+    const existingId = el("player-id").value;
+    let playerId = existingId;
+    if (existingId) {
+      await api(`players?id=eq.${encodeURIComponent(existingId)}`, {
+        method: "PATCH",
+        body: { full_name: el("player-name").value.trim() },
+        authenticated: true,
+      });
+    } else {
+      const created = await api("players?select=id,full_name", {
+        method: "POST",
+        body: { full_name: el("player-name").value.trim() },
+        prefer: "return=representation",
+        authenticated: true,
+      });
+      playerId = created[0].id;
+    }
+    await api("player_private?on_conflict=player_id", {
       method: "POST",
       body: {
-        player_id: created[0].id,
+        player_id: Number(playerId),
         residence: el("player-residence").value.trim() || null,
+        player_status: el("player-status").value || null,
+        email: el("player-email").value.trim() || null,
         phone: el("player-phone").value.trim() || null,
         booking_reputation: el("player-reputation").value.trim() || "Clear",
         in_whatsapp: el("player-whatsapp").value === "" ? null : el("player-whatsapp").value === "true",
       },
+      prefer: "resolution=merge-duplicates,return=minimal",
       authenticated: true,
     });
-    el("player-form").reset();
-    el("player-reputation").value = "Clear";
-    setMessage(message, "Pemain berhasil ditambahkan.");
+    const successMessage = existingId ? "Data pemain berhasil diperbarui." : "Pemain berhasil ditambahkan.";
+    resetPlayerForm();
     await Promise.all([loadPlayers(), loadAdminPlayers()]);
+    setMessage(message, successMessage);
   } catch (error) {
     setMessage(message, error.code === "23505" ? "Nama pemain sudah terdaftar." : error.message, true);
   }
