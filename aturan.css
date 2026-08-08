@@ -44,11 +44,13 @@ li + li { margin-top: .45rem; }
   width: min(1120px, calc(100% - 2rem)); min-height: 68px; margin: auto;
   display: flex; align-items: center; gap: 1rem;
 }
-.brand { font-weight: 800; letter-spacing: .03em; white-space: nowrap; }
+.brand { display: inline-flex; align-items: center; color: white; text-decoration: none; font-weight: 800; letter-spacing: .03em; white-space: nowrap; }
 .brand span { color: var(--lime); }
 nav { margin-left: auto; display: flex; gap: .25rem; overflow-x: auto; scrollbar-width: none; }
 nav a { padding: .45rem .7rem; border-radius: 999px; text-decoration: none; white-space: nowrap; font-size: .9rem; }
 nav a:hover, nav a:focus-visible { background: rgba(255,255,255,.12); outline: none; }
+.topbar nav .home-link { padding: .42rem .7rem; color: var(--green-dark); background: var(--lime); font-weight: 800; }
+.topbar nav .home-link:hover, .topbar nav .home-link:focus-visible { background: #ebf59d; }
 
 .hero { position: relative; overflow: hidden; color: white; background: var(--green-dark); }
 .hero::before, .hero::after { content: ""; position: absolute; border-radius: 50%; pointer-events: none; }
