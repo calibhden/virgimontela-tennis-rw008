@@ -511,9 +511,12 @@ function setBookingDateDefault() {
 
 async function loadAdminBookings() {
   if (!state.profile || state.profile.role === "pending") return;
-  const end = addDays(state.weekStart, 7);
-  const startFilter = encodeURIComponent(`${dateKey(state.weekStart)}T00:00:00+07:00`);
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+  const end = addDays(start, 14);
+  const startFilter = encodeURIComponent(`${dateKey(start)}T00:00:00+07:00`);
   const endFilter = encodeURIComponent(`${dateKey(end)}T00:00:00+07:00`);
+  el("admin-booking-range").textContent = `${formatDate(start)} – ${formatDate(addDays(end, -1))}`;
   try {
     state.adminBookings = await api(`bookings?select=*&start_at=gte.${startFilter}&start_at=lt.${endFilter}&order=start_at.asc`, { authenticated: true });
     renderAdminBookings();
@@ -525,7 +528,7 @@ async function loadAdminBookings() {
 function renderAdminBookings() {
   const list = el("admin-booking-list");
   if (!state.adminBookings.length) {
-    list.innerHTML = `<p class="empty-state">Belum ada booking pada minggu ini.</p>`;
+    list.innerHTML = `<p class="empty-state">Belum ada booking untuk 14 hari ke depan.</p>`;
     return;
   }
   list.innerHTML = state.adminBookings.map((booking) => `
