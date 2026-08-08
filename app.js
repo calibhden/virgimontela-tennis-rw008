@@ -316,7 +316,7 @@ function onScheduleClick(event) {
 
 async function loadPlayers() {
   try {
-    state.players = await api("players?select=id,full_name&is_active=eq.true&order=full_name.asc");
+    state.players = await api("players?select=id,full_name,block,house_number&is_active=eq.true&order=full_name.asc");
     renderPlayers();
   } catch (error) {
     el("player-grid").innerHTML = `<p class="empty-state">Daftar pemain belum dapat dimuat: ${escapeHtml(error.message)}</p>`;
@@ -325,13 +325,20 @@ async function loadPlayers() {
 
 function renderPlayers() {
   const query = el("player-search").value.trim().toLocaleLowerCase("id-ID");
-  const filtered = state.players.filter((player) => player.full_name.toLocaleLowerCase("id-ID").includes(query));
+  const filtered = state.players.filter((player) => `${player.full_name} ${player.block || ""} ${player.house_number || ""}`.toLocaleLowerCase("id-ID").includes(query));
   const visible = query || state.showAllPlayers ? filtered : filtered.slice(0, 24);
   el("player-count").textContent = state.players.length || "—";
   el("player-grid").innerHTML = visible.length
-    ? visible.map((player) => `<div class="player-chip"><span class="player-initial">${escapeHtml(initials(player.full_name))}</span><span class="player-name">${escapeHtml(player.full_name)}</span></div>`).join("")
+    ? visible.map((player) => `<div class="player-chip"><span class="player-initial">${escapeHtml(initials(player.full_name))}</span><span class="player-name">${escapeHtml(player.full_name)}</span><span class="player-address">${escapeHtml(playerAddressLabel(player))}</span></div>`).join("")
     : `<p class="empty-state">Tidak ada nama yang cocok.</p>`;
   el("show-all-players").classList.toggle("hidden", Boolean(query) || state.showAllPlayers || filtered.length <= 24);
+}
+
+function playerAddressLabel(player) {
+  if (player.block && player.house_number) return `Blok ${player.block} · No. ${player.house_number}`;
+  if (player.block) return `Blok ${player.block}`;
+  if (player.house_number) return `No. ${player.house_number}`;
+  return "Alamat belum dicatat";
 }
 
 async function login(event) {
@@ -563,8 +570,8 @@ async function loadAdminPlayers() {
   if (!state.profile || state.profile.role === "pending") return;
   try {
     const [players, privateRows] = await Promise.all([
-      api("players?select=id,full_name,is_active&order=full_name.asc", { authenticated: true }),
-      api("player_private?select=player_id,residence,booking_reputation,email,phone,player_status,in_whatsapp", { authenticated: true }),
+      api("players?select=id,full_name,is_active,block,house_number&order=full_name.asc", { authenticated: true }),
+      api("player_private?select=player_id,booking_reputation,email,phone,player_status,in_whatsapp", { authenticated: true }),
     ]);
     const privateMap = new Map(privateRows.map((row) => [row.player_id, row]));
     state.adminPlayers = players.map((player) => ({ ...player, ...(privateMap.get(player.id) || {}) }));
@@ -576,13 +583,13 @@ async function loadAdminPlayers() {
 
 function renderAdminPlayers() {
   const query = el("admin-player-search").value.trim().toLocaleLowerCase("id-ID");
-  const rows = state.adminPlayers.filter((player) => `${player.full_name} ${player.residence || ""} ${player.player_status || ""} ${player.email || ""} ${player.phone || ""}`.toLocaleLowerCase("id-ID").includes(query));
+  const rows = state.adminPlayers.filter((player) => `${player.full_name} ${player.block || ""} ${player.house_number || ""} ${player.player_status || ""} ${player.email || ""} ${player.phone || ""}`.toLocaleLowerCase("id-ID").includes(query));
   el("admin-player-list").innerHTML = rows.length ? rows.map((player) => `
     <div class="admin-list-item">
       <div class="admin-list-main">
         <div>
           <strong>${escapeHtml(player.full_name)}</strong>
-          <p>${escapeHtml(player.residence || "Tempat tinggal belum dicatat")} · ${escapeHtml(player.email || "Email belum dicatat")}</p>
+          <p>${escapeHtml(playerAddressLabel(player))} · ${escapeHtml(player.email || "Email belum dicatat")}</p>
           <p>${escapeHtml(player.phone || "No. HP belum dicatat")} · ${escapeHtml(player.booking_reputation || "Clear")}</p>
         </div>
         <span class="badge ${player.player_status ? "" : "pending"}">${escapeHtml(playerStatusLabel(player.player_status))}</span>
@@ -605,7 +612,8 @@ function editPlayer(id) {
   if (!player) return;
   el("player-id").value = player.id;
   el("player-name").value = player.full_name || "";
-  el("player-residence").value = player.residence || "";
+  el("player-block").value = player.block || "";
+  el("player-house-number").value = player.house_number || "";
   el("player-status").value = player.player_status || "";
   el("player-email").value = player.email || "";
   el("player-phone").value = player.phone || "";
@@ -634,17 +642,22 @@ async function savePlayer(event) {
   setMessage(message, "Menyimpan…");
   try {
     const existingId = el("player-id").value;
+    const playerPayload = {
+      full_name: el("player-name").value.trim(),
+      block: el("player-block").value.trim() || null,
+      house_number: el("player-house-number").value.trim() || null,
+    };
     let playerId = existingId;
     if (existingId) {
       await api(`players?id=eq.${encodeURIComponent(existingId)}`, {
         method: "PATCH",
-        body: { full_name: el("player-name").value.trim() },
+        body: playerPayload,
         authenticated: true,
       });
     } else {
-      const created = await api("players?select=id,full_name", {
+      const created = await api("players?select=id,full_name,block,house_number", {
         method: "POST",
-        body: { full_name: el("player-name").value.trim() },
+        body: playerPayload,
         prefer: "return=representation",
         authenticated: true,
       });
@@ -654,7 +667,6 @@ async function savePlayer(event) {
       method: "POST",
       body: {
         player_id: Number(playerId),
-        residence: el("player-residence").value.trim() || null,
         player_status: el("player-status").value || null,
         email: el("player-email").value.trim() || null,
         phone: el("player-phone").value.trim() || null,
