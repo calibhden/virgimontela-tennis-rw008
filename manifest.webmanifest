@@ -1,0 +1,9 @@
+{
+  "name": "Tennis RW 008 Virgimontela",
+  "short_name": "Tennis RW 008",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f7f3e9",
+  "theme_color": "#102c26",
+  "icons": []
+}
