@@ -208,19 +208,32 @@
 
         <div class="admin-pane hidden" id="admin-players" data-admin-pane="players">
           <div class="admin-grid">
-            <form class="admin-card global-only" id="player-form">
-              <div class="card-heading"><div><p class="eyebrow dark">Database warga</p><h3>Tambah pemain</h3></div></div>
+            <form class="admin-card" id="player-form">
+              <div class="card-heading">
+                <div><p class="eyebrow dark">Database warga</p><h3 id="player-form-title">Tambah pemain</h3></div>
+                <button class="text-button hidden" id="reset-player-form" type="button">Batal edit</button>
+              </div>
+              <input type="hidden" id="player-id">
               <label>Nama lengkap<input id="player-name" required maxlength="100"></label>
               <div class="form-row">
                 <label>Tempat tinggal<input id="player-residence" maxlength="40" placeholder="Contoh: C2/1"></label>
-                <label>No. telepon<input id="player-phone" maxlength="30" inputmode="tel"></label>
+                <label>Status<select id="player-status">
+                  <option value="">Belum dicatat</option>
+                  <option value="pemilik">Pemilik</option>
+                  <option value="penyewa">Penyewa</option>
+                  <option value="pelatih">Pelatih</option>
+                </select></label>
+              </div>
+              <div class="form-row">
+                <label>Email<input id="player-email" type="email" maxlength="120" autocomplete="off" placeholder="nama@email.com"></label>
+                <label>No. HP<input id="player-phone" maxlength="30" inputmode="tel" autocomplete="off" placeholder="08xxxxxxxxxx"></label>
               </div>
               <div class="form-row">
                 <label>Reputasi booking<input id="player-reputation" value="Clear" maxlength="40"></label>
                 <label>Di WA Group?<select id="player-whatsapp"><option value="">Belum dicatat</option><option value="true">Ya</option><option value="false">Tidak</option></select></label>
               </div>
               <p class="form-message" id="player-message" role="status"></p>
-              <button class="button button-primary full" type="submit">Tambah pemain</button>
+              <button class="button button-primary full" id="player-submit-label" type="submit">Tambah pemain</button>
             </form>
             <div class="admin-card">
               <div class="card-heading"><div><p class="eyebrow dark">Data terlindungi</p><h3>Daftar pemain lengkap</h3></div><button class="text-button" id="refresh-admin-players" type="button">Muat ulang</button></div>
