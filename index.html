@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#102c26">
   <meta name="description" content="Jadwal, daftar pemain, dan aturan penggunaan Lapangan Tennis RW 008 Virgimontela.">
   <title>Tennis RW 008 Virgimontela</title>
-  <link rel="stylesheet" href="/styles.css?v=20260808-5">
+  <link rel="stylesheet" href="/styles.css?v=20260808-6">
   <link rel="manifest" href="/manifest.webmanifest">
 </head>
 <body>
@@ -234,6 +234,22 @@
                 <label>Reputasi booking<input id="player-reputation" value="Clear" maxlength="40"></label>
               </div>
               <label>Di WA Group?<select id="player-whatsapp"><option value="">Belum dicatat</option><option value="true">Ya</option><option value="false">Tidak</option></select></label>
+              <fieldset class="penalty-editor">
+                <legend>Penalti · hanya admin</legend>
+                <div class="form-row">
+                  <label>Status penalti<select id="player-penalty-status">
+                    <option value="clear">Tidak ada penalti</option>
+                    <option value="no_show_warning">Peringatan no-show (1 kali)</option>
+                    <option value="no_show_2_weeks">Larangan booking 2 minggu (2 kali)</option>
+                    <option value="no_show_2_months">Larangan booking 2 bulan (3 kali)</option>
+                    <option value="violation_6_months">Larangan bermain/booking 6 bulan</option>
+                    <option value="blacklisted">Daftar hitam</option>
+                  </select></label>
+                  <label>Berlaku sampai<input id="player-penalty-until" type="date"></label>
+                </div>
+                <label>Catatan internal<textarea id="player-penalty-notes" rows="3" maxlength="500" placeholder="Contoh: No-show kedua pada 8 Agustus 2026."></textarea></label>
+                <p class="penalty-help">Mengikuti tahapan sanksi dalam buku panduan. Informasi ini tidak ditampilkan kepada warga.</p>
+              </fieldset>
               <p class="form-message" id="player-message" role="status"></p>
               <button class="button button-primary full" id="player-submit-label" type="submit">Tambah pemain</button>
             </form>
@@ -292,6 +308,6 @@
   </dialog>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="/app.js?v=20260808-5" defer></script>
+  <script src="/app.js?v=20260808-6" defer></script>
 </body>
 </html>
