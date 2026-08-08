@@ -210,6 +210,10 @@ h3 { margin-bottom: .45rem; }
 .admin-card label, .modal label { display: block; margin-bottom: .8rem; color: var(--ink-soft); font-size: .8rem; font-weight: 700; }
 .admin-card label input, .admin-card label select, .admin-card label textarea, .modal label input { display: block; margin-top: .3rem; color: var(--ink); font-weight: 450; }
 .form-row { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .7rem; }
+.penalty-editor { margin: .35rem 0 1rem; padding: .9rem 1rem .75rem; border: 1px solid #ead18a; border-radius: 12px; background: #fff9e8; }
+.penalty-editor legend { padding: 0 .35rem; color: #795e0a; font-size: .78rem; font-weight: 850; letter-spacing: .02em; }
+.penalty-editor label:last-of-type { margin-bottom: .45rem; }
+.penalty-help { margin: 0; color: #776b4a; font-size: .72rem; }
 .form-message { min-height: 1.2rem; margin: 0 0 .65rem; color: var(--green-700); font-size: .82rem; }
 .form-message.error { color: #9b342f; }
 .admin-list { display: grid; gap: .6rem; max-height: 610px; overflow-y: auto; }
@@ -224,6 +228,12 @@ h3 { margin-bottom: .45rem; }
 .badge { display: inline-block; padding: .16rem .42rem; border-radius: 999px; color: var(--green-800); background: var(--green-100); font-size: .68rem; font-weight: 800; }
 .badge.cancelled { color: #93332e; background: #fbe3e1; }
 .badge.pending { color: #795e0a; background: #fff0b9; }
+.player-penalty-row { margin-top: .45rem; display: flex; flex-wrap: wrap; align-items: center; gap: .35rem; color: var(--ink-soft); font-size: .7rem; }
+.penalty-badge { display: inline-block; padding: .16rem .42rem; border-radius: 999px; font-size: .68rem; font-weight: 800; }
+.penalty-badge.clear { color: var(--green-800); background: var(--green-100); }
+.penalty-badge.warning { color: #795e0a; background: #fff0b9; }
+.penalty-badge.danger { color: #93332e; background: #fbe3e1; }
+.admin-list-main p.penalty-note { margin-top: .35rem; padding-left: .48rem; color: #76534e; border-left: 2px solid #e4b6b1; }
 
 footer { padding: 2.2rem max(1rem, calc((100vw - 1180px) / 2)); display: flex; justify-content: space-between; gap: 2rem; color: #d2dfda; background: #0b211c; }
 footer strong, footer span { display: block; }
