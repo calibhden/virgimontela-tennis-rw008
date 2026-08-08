@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#102c26">
   <meta name="description" content="Jadwal, daftar pemain, dan aturan penggunaan Lapangan Tennis RW 008 Virgimontela.">
   <title>Tennis RW 008 Virgimontela</title>
-  <link rel="stylesheet" href="/styles.css?v=20260808-2">
+  <link rel="stylesheet" href="/styles.css?v=20260808-3">
   <link rel="manifest" href="/manifest.webmanifest">
 </head>
 <body>
@@ -83,7 +83,7 @@
         <div>
           <p class="eyebrow dark">Komunitas warga</p>
           <h2 id="players-heading">Daftar pemain</h2>
-          <p>Hanya nama yang ditampilkan secara publik. Informasi pribadi tetap terlindungi.</p>
+          <p>Nama, blok, dan nomor rumah ditampilkan untuk memudahkan warga saling mengenal. Email dan nomor HP tetap terlindungi.</p>
         </div>
         <label class="search-box">
           <span class="sr-only">Cari nama pemain</span>
@@ -216,22 +216,23 @@
               <input type="hidden" id="player-id">
               <label>Nama lengkap<input id="player-name" required maxlength="100"></label>
               <div class="form-row">
-                <label>Tempat tinggal<input id="player-residence" maxlength="40" placeholder="Contoh: C2/1"></label>
+                <label>Blok<input id="player-block" maxlength="20" placeholder="Contoh: C2"></label>
+                <label>Nomor rumah<input id="player-house-number" maxlength="20" placeholder="Contoh: 1"></label>
+              </div>
+              <div class="form-row">
                 <label>Status<select id="player-status">
                   <option value="">Belum dicatat</option>
                   <option value="pemilik">Pemilik</option>
                   <option value="penyewa">Penyewa</option>
                   <option value="pelatih">Pelatih</option>
                 </select></label>
-              </div>
-              <div class="form-row">
                 <label>Email<input id="player-email" type="email" maxlength="120" autocomplete="off" placeholder="nama@email.com"></label>
-                <label>No. HP<input id="player-phone" maxlength="30" inputmode="tel" autocomplete="off" placeholder="08xxxxxxxxxx"></label>
               </div>
               <div class="form-row">
+                <label>No. HP<input id="player-phone" maxlength="30" inputmode="tel" autocomplete="off" placeholder="08xxxxxxxxxx"></label>
                 <label>Reputasi booking<input id="player-reputation" value="Clear" maxlength="40"></label>
-                <label>Di WA Group?<select id="player-whatsapp"><option value="">Belum dicatat</option><option value="true">Ya</option><option value="false">Tidak</option></select></label>
               </div>
+              <label>Di WA Group?<select id="player-whatsapp"><option value="">Belum dicatat</option><option value="true">Ya</option><option value="false">Tidak</option></select></label>
               <p class="form-message" id="player-message" role="status"></p>
               <button class="button button-primary full" id="player-submit-label" type="submit">Tambah pemain</button>
             </form>
@@ -290,6 +291,6 @@
   </dialog>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="/app.js?v=20260808-2" defer></script>
+  <script src="/app.js?v=20260808-3" defer></script>
 </body>
 </html>
