@@ -104,6 +104,12 @@ function formatDate(date, options = {}) {
   }).format(date);
 }
 
+function formatDateOnly(value) {
+  const [year, month, day] = String(value).split("-").map(Number);
+  if (!year || !month || !day) return "";
+  return formatDate(new Date(year, month - 1, day));
+}
+
 function formatTime(value) {
   return new Intl.DateTimeFormat("id-ID", {
     timeZone: JAKARTA_TZ,
@@ -632,7 +638,7 @@ async function loadAdminPlayers() {
   try {
     const [players, privateRows] = await Promise.all([
       api("players?select=id,full_name,is_active,block,house_number&order=full_name.asc", { authenticated: true }),
-      api("player_private?select=player_id,booking_reputation,email,phone,player_status,in_whatsapp", { authenticated: true }),
+      api("player_private?select=player_id,booking_reputation,email,phone,player_status,in_whatsapp,penalty_status,penalty_until,penalty_notes", { authenticated: true }),
     ]);
     const privateMap = new Map(privateRows.map((row) => [row.player_id, row]));
     state.adminPlayers = players.map((player) => ({ ...player, ...(privateMap.get(player.id) || {}) }));
@@ -644,23 +650,49 @@ async function loadAdminPlayers() {
 
 function renderAdminPlayers() {
   const query = el("admin-player-search").value.trim().toLocaleLowerCase("id-ID");
-  const rows = state.adminPlayers.filter((player) => `${player.full_name} ${player.block || ""} ${player.house_number || ""} ${player.player_status || ""} ${player.email || ""} ${player.phone || ""}`.toLocaleLowerCase("id-ID").includes(query));
-  el("admin-player-list").innerHTML = rows.length ? rows.map((player) => `
+  const rows = state.adminPlayers.filter((player) => `${player.full_name} ${player.block || ""} ${player.house_number || ""} ${player.player_status || ""} ${player.email || ""} ${player.phone || ""} ${penaltyStatusLabel(player.penalty_status)} ${player.penalty_notes || ""}`.toLocaleLowerCase("id-ID").includes(query));
+  el("admin-player-list").innerHTML = rows.length ? rows.map((player) => {
+    const penaltyTone = penaltyStatusTone(player.penalty_status);
+    const penaltyUntil = player.penalty_until ? formatDateOnly(player.penalty_until) : "";
+    return `
     <div class="admin-list-item">
       <div class="admin-list-main">
         <div>
           <strong>${escapeHtml(player.full_name)}</strong>
           <p>${escapeHtml(playerAddressLabel(player))} · ${escapeHtml(player.email || "Email belum dicatat")}</p>
           <p>${escapeHtml(player.phone || "No. HP belum dicatat")} · ${escapeHtml(player.booking_reputation || "Clear")}</p>
+          <div class="player-penalty-row">
+            <span class="penalty-badge ${penaltyTone}">${escapeHtml(penaltyStatusLabel(player.penalty_status))}</span>
+            ${penaltyUntil ? `<span>sampai ${escapeHtml(penaltyUntil)}</span>` : ""}
+          </div>
+          ${player.penalty_notes ? `<p class="penalty-note">${escapeHtml(player.penalty_notes)}</p>` : ""}
         </div>
         <span class="badge ${player.player_status ? "" : "pending"}">${escapeHtml(playerStatusLabel(player.player_status))}</span>
       </div>
       <div class="admin-list-actions"><button class="mini-button" type="button" data-edit-player="${escapeHtml(player.id)}">Edit data</button></div>
-    </div>`).join("") : `<p class="empty-state">Tidak ada data yang cocok.</p>`;
+    </div>`;
+  }).join("") : `<p class="empty-state">Tidak ada data yang cocok.</p>`;
 }
 
 function playerStatusLabel(status) {
   return { pemilik: "Pemilik", penyewa: "Penyewa", pelatih: "Pelatih" }[status] || "Status belum dicatat";
+}
+
+function penaltyStatusLabel(status) {
+  return {
+    clear: "Tidak ada penalti",
+    no_show_warning: "Peringatan no-show (1 kali)",
+    no_show_2_weeks: "Larangan booking 2 minggu",
+    no_show_2_months: "Larangan booking 2 bulan",
+    violation_6_months: "Larangan bermain/booking 6 bulan",
+    blacklisted: "Daftar hitam",
+  }[status] || "Tidak ada penalti";
+}
+
+function penaltyStatusTone(status) {
+  if (!status || status === "clear") return "clear";
+  if (status === "no_show_warning") return "warning";
+  return "danger";
 }
 
 function onAdminPlayerAction(event) {
@@ -680,6 +712,9 @@ function editPlayer(id) {
   el("player-phone").value = player.phone || "";
   el("player-reputation").value = player.booking_reputation || "Clear";
   el("player-whatsapp").value = player.in_whatsapp == null ? "" : String(player.in_whatsapp);
+  el("player-penalty-status").value = player.penalty_status || "clear";
+  el("player-penalty-until").value = player.penalty_until || "";
+  el("player-penalty-notes").value = player.penalty_notes || "";
   el("player-form-title").textContent = "Edit pemain";
   el("player-submit-label").textContent = "Simpan perubahan";
   el("reset-player-form").classList.remove("hidden");
@@ -691,6 +726,7 @@ function resetPlayerForm() {
   el("player-form").reset();
   el("player-id").value = "";
   el("player-reputation").value = "Clear";
+  el("player-penalty-status").value = "clear";
   el("player-form-title").textContent = "Tambah pemain";
   el("player-submit-label").textContent = "Tambah pemain";
   el("reset-player-form").classList.add("hidden");
@@ -733,6 +769,9 @@ async function savePlayer(event) {
         phone: el("player-phone").value.trim() || null,
         booking_reputation: el("player-reputation").value.trim() || "Clear",
         in_whatsapp: el("player-whatsapp").value === "" ? null : el("player-whatsapp").value === "true",
+        penalty_status: el("player-penalty-status").value || "clear",
+        penalty_until: el("player-penalty-until").value || null,
+        penalty_notes: el("player-penalty-notes").value.trim() || null,
       },
       prefer: "resolution=merge-duplicates,return=minimal",
       authenticated: true,
