@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#102c26">
+  <meta name="description" content="Jadwal, daftar pemain, dan aturan penggunaan Lapangan Tennis RW 008 Virgimontela.">
+  <title>Tennis RW 008 Virgimontela</title>
+  <link rel="stylesheet" href="/styles.css?v=20260808-7">
+  <link rel="manifest" href="/manifest.webmanifest">
+</head>
+<body>
+  <a class="skip-link" href="#main">Langsung ke isi</a>
+
+  <header class="site-header">
+    <a class="brand" href="/" aria-label="Virgimontela, kembali ke portal utama">
+      <img src="/assets/virgimontela-logo.svg" alt="Virgimontela">
+      <span class="brand-context">Tennis RW 008</span>
+    </a>
+    <nav aria-label="Navigasi utama">
+      <a href="/">Portal</a>
+      <a href="#jadwal">Jadwal</a>
+      <a href="#pemain">Pemain</a>
+      <a href="#aturan">Aturan</a>
+      <button class="nav-login" id="open-login" type="button">Login Admin</button>
+      <button class="nav-login hidden" id="open-admin" type="button">Panel Admin</button>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="hero" id="atas">
+      <div class="hero-copy">
+        <p class="eyebrow">Komunitas Tennis RW 008</p>
+        <h1>Satu tempat untuk melihat jadwal lapangan.</h1>
+        <p class="hero-lead">Jadwal terbaru, daftar pemain warga, dan panduan penggunaan lapangan—mudah dibuka dari ponsel.</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="#jadwal">Lihat jadwal minggu ini</a>
+          <a class="button button-ghost" href="#aturan">Baca aturan</a>
+        </div>
+      </div>
+      <div class="hero-status" aria-label="Informasi lapangan">
+        <span class="status-dot"></span>
+        <div>
+          <strong>2 lapangan outdoor</strong>
+          <span>Buka setiap hari · 05.00–22.00 WIB</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section schedule-section" id="jadwal" aria-labelledby="schedule-heading">
+      <div class="section-heading schedule-heading-row">
+        <div>
+          <p class="eyebrow dark">Jadwal terbaru</p>
+          <h2 id="schedule-heading">Booking lapangan</h2>
+          <p id="week-label">Memuat periode…</p>
+        </div>
+        <div class="week-controls" aria-label="Pilih minggu">
+          <button class="icon-button" id="prev-week" type="button" aria-label="Minggu sebelumnya">←</button>
+          <button class="text-button" id="current-week" type="button">Minggu ini</button>
+          <button class="icon-button" id="next-week" type="button" aria-label="Minggu berikutnya">→</button>
+        </div>
+      </div>
+
+      <div class="schedule-legend" aria-label="Legenda jadwal">
+        <span><i class="legend-dot priority-1"></i>Prioritas 1</span>
+        <span><i class="legend-dot priority-2"></i>Prioritas 2</span>
+        <span><i class="legend-dot priority-3"></i>Prioritas 3</span>
+        <span><i class="legend-dot incidental"></i>Insidental</span>
+        <span><i class="legend-dot basket"></i>Basket</span>
+      </div>
+
+      <div class="schedule-shell">
+        <div class="schedule-loading" id="schedule-loading">Memuat jadwal…</div>
+        <div class="schedule-error hidden" id="schedule-error" role="alert"></div>
+        <div class="schedule-scroll hidden" id="schedule-scroll" tabindex="0" aria-label="Jadwal mendatar, geser untuk melihat jam berikutnya">
+          <div class="schedule-canvas" id="schedule-canvas"></div>
+        </div>
+      </div>
+      <p class="scroll-hint">Geser ke samping untuk melihat seluruh jam. Ketuk booking untuk melihat rinciannya.</p>
+    </section>
+
+    <section class="section players-section" id="pemain" aria-labelledby="players-heading">
+      <div class="section-heading split-heading">
+        <div>
+          <p class="eyebrow dark">Komunitas warga</p>
+          <h2 id="players-heading">Daftar pemain</h2>
+          <p>Nama, blok, dan nomor rumah ditampilkan untuk memudahkan warga saling mengenal. Email dan nomor HP tetap terlindungi.</p>
+        </div>
+        <label class="search-box">
+          <span class="sr-only">Cari nama pemain</span>
+          <input id="player-search" type="search" placeholder="Cari nama pemain…" autocomplete="off">
+        </label>
+      </div>
+      <div class="player-summary"><strong id="player-count">—</strong> pemain warga terdaftar</div>
+      <div class="player-grid" id="player-grid" aria-live="polite"></div>
+      <button class="text-button show-more hidden" id="show-all-players" type="button">Tampilkan semua pemain</button>
+    </section>
+
+    <section class="section rules-section" id="aturan" aria-labelledby="rules-heading">
+      <div class="section-heading">
+        <p class="eyebrow light">Panduan resmi</p>
+        <h2 id="rules-heading">Hal penting sebelum bermain</h2>
+        <p>Aturan berlaku mulai 1 Agustus 2026.</p>
+      </div>
+      <div class="rule-cards">
+        <article>
+          <span>01</span>
+          <h3>Warga &amp; tamu</h3>
+          <p>Tamu wajib didampingi warga dan jumlahnya maksimal separuh dari grup.</p>
+        </article>
+        <article>
+          <span>02</span>
+          <h3>Booking terbuka</h3>
+          <p>Permintaan disampaikan melalui WhatsApp Group, bukan pesan pribadi admin.</p>
+        </article>
+        <article>
+          <span>03</span>
+          <h3>Pembatalan</h3>
+          <p>Pembatalan kurang dari 10 jam sebelum bermain dianggap sebagai no-show.</p>
+        </article>
+        <article>
+          <span>04</span>
+          <h3>Jaga lapangan</h3>
+          <p>Hormati pemain lain, bersihkan sampah, serta patuhi ketentuan keselamatan.</p>
+        </article>
+      </div>
+      <a class="button button-light" href="/tennis/aturan">Baca panduan lengkap</a>
+    </section>
+
+    <section class="section admin-section hidden" id="admin" aria-labelledby="admin-heading">
+      <div class="section-heading split-heading">
+        <div>
+          <p class="eyebrow dark">Area terbatas</p>
+          <h2 id="admin-heading">Panel admin</h2>
+          <p id="admin-identity"></p>
+        </div>
+        <button class="button button-outline" id="logout" type="button">Keluar</button>
+      </div>
+
+      <div class="pending-card hidden" id="pending-card">
+        <h3>Akun menunggu aktivasi</h3>
+        <p>Login berhasil, tetapi akun ini belum diberi peran admin. Hubungi Admin Global untuk mengaktifkannya.</p>
+      </div>
+
+      <div id="admin-workspace" class="hidden">
+        <div class="admin-tabs" role="tablist" aria-label="Menu admin">
+          <button class="admin-tab active" data-admin-tab="booking" type="button" role="tab">Penjadwalan</button>
+          <button class="admin-tab" data-admin-tab="players" type="button" role="tab">Data pemain</button>
+          <button class="admin-tab global-only" data-admin-tab="access" type="button" role="tab">Hak akses</button>
+        </div>
+
+        <div class="admin-pane" id="admin-booking" data-admin-pane="booking">
+          <div class="admin-grid">
+            <form class="admin-card" id="booking-form">
+              <div class="card-heading">
+                <div>
+                  <p class="eyebrow dark">Kelola jadwal</p>
+                  <h3 id="booking-form-title">Tambah booking</h3>
+                </div>
+                <button class="text-button hidden" id="reset-booking-form" type="button">Batal edit</button>
+              </div>
+              <input type="hidden" id="booking-id">
+              <label>Nama booking<input id="booking-title" required maxlength="80" placeholder="Contoh: VTC A (Tony)"></label>
+              <div class="form-row">
+                <label>Lapangan<select id="booking-court" required><option value="A">Lapangan A</option><option value="B">Lapangan B</option></select></label>
+                <label>Tanggal<input id="booking-date" type="date" required></label>
+              </div>
+              <div class="form-row">
+                <label>Mulai<input id="booking-start" type="time" min="05:00" max="21:45" step="900" required></label>
+                <label>Selesai<input id="booking-end" type="time" min="05:15" max="22:00" step="900" required></label>
+              </div>
+              <div class="form-row">
+                <label>Jenis<select id="booking-type" required>
+                  <option value="mabar_warga">Mabar warga</option>
+                  <option value="private">Private / coaching</option>
+                  <option value="non_warga">Mabar non-warga</option>
+                  <option value="incidental">Insidental</option>
+                  <option value="basket">Basket</option>
+                </select></label>
+                <label>Prioritas<select id="booking-priority">
+                  <option value="">Tidak berlaku</option>
+                  <option value="1">Prioritas 1</option>
+                  <option value="2">Prioritas 2</option>
+                  <option value="3">Prioritas 3</option>
+                </select></label>
+              </div>
+              <label>Komposisi warga<select id="booking-ratio">
+                <option value="not_applicable">Tidak berlaku</option>
+                <option value="gte_50">≥ 50% warga</option>
+                <option value="lt_50">&lt; 50% warga</option>
+              </select></label>
+              <label>Catatan<textarea id="booking-notes" rows="3" maxlength="300" placeholder="Opsional; catatan ini ikut terlihat pada detail booking publik."></textarea></label>
+              <p class="form-message" id="booking-message" role="status"></p>
+              <button class="button button-primary full" type="submit">Simpan booking</button>
+            </form>
+
+            <div class="admin-card">
+              <div class="card-heading">
+                <div>
+                  <p class="eyebrow dark">14 hari ke depan</p>
+                  <h3>Daftar booking</h3>
+                  <p class="admin-range" id="admin-booking-range"></p>
+                </div>
+                <button class="text-button" id="refresh-admin-bookings" type="button">Muat ulang</button>
+              </div>
+              <div class="admin-list" id="admin-booking-list"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="admin-pane hidden" id="admin-players" data-admin-pane="players">
+          <div class="admin-grid">
+            <form class="admin-card" id="player-form">
+              <div class="card-heading">
+                <div><p class="eyebrow dark">Database warga</p><h3 id="player-form-title">Tambah pemain</h3></div>
+                <button class="text-button hidden" id="reset-player-form" type="button">Batal edit</button>
+              </div>
+              <input type="hidden" id="player-id">
+              <label>Nama lengkap<input id="player-name" required maxlength="100"></label>
+              <div class="form-row">
+                <label>Blok<input id="player-block" maxlength="20" placeholder="Contoh: C2"></label>
+                <label>Nomor rumah<input id="player-house-number" maxlength="20" placeholder="Contoh: 1"></label>
+              </div>
+              <div class="form-row">
+                <label>Status<select id="player-status">
+                  <option value="">Belum dicatat</option>
+                  <option value="pemilik">Pemilik</option>
+                  <option value="penyewa">Penyewa</option>
+                  <option value="pelatih">Pelatih</option>
+                </select></label>
+                <label>Email<input id="player-email" type="email" maxlength="120" autocomplete="off" placeholder="nama@email.com"></label>
+              </div>
+              <div class="form-row">
+                <label>No. HP<input id="player-phone" maxlength="30" inputmode="tel" autocomplete="off" placeholder="08xxxxxxxxxx"></label>
+                <label>Reputasi booking<input id="player-reputation" value="Clear" maxlength="40"></label>
+              </div>
+              <label>Di WA Group?<select id="player-whatsapp"><option value="">Belum dicatat</option><option value="true">Ya</option><option value="false">Tidak</option></select></label>
+              <fieldset class="penalty-editor">
+                <legend>Penalti · hanya admin</legend>
+                <div class="form-row">
+                  <label>Status penalti<select id="player-penalty-status">
+                    <option value="clear">Tidak ada penalti</option>
+                    <option value="no_show_warning">Peringatan no-show (1 kali)</option>
+                    <option value="no_show_2_weeks">Larangan booking 2 minggu (2 kali)</option>
+                    <option value="no_show_2_months">Larangan booking 2 bulan (3 kali)</option>
+                    <option value="violation_6_months">Larangan bermain/booking 6 bulan</option>
+                    <option value="blacklisted">Daftar hitam</option>
+                  </select></label>
+                  <label>Berlaku sampai<input id="player-penalty-until" type="date"></label>
+                </div>
+                <label>Catatan internal<textarea id="player-penalty-notes" rows="3" maxlength="500" placeholder="Contoh: No-show kedua pada 8 Agustus 2026."></textarea></label>
+                <p class="penalty-help">Mengikuti tahapan sanksi dalam buku panduan. Informasi ini tidak ditampilkan kepada warga.</p>
+              </fieldset>
+              <p class="form-message" id="player-message" role="status"></p>
+              <button class="button button-primary full" id="player-submit-label" type="submit">Tambah pemain</button>
+            </form>
+            <div class="admin-card">
+              <div class="card-heading"><div><p class="eyebrow dark">Data terlindungi</p><h3>Daftar pemain lengkap</h3></div><button class="text-button" id="refresh-admin-players" type="button">Muat ulang</button></div>
+              <label class="search-box compact"><span class="sr-only">Cari data pemain</span><input id="admin-player-search" type="search" placeholder="Cari nama atau blok…"></label>
+              <div class="admin-list player-admin-list" id="admin-player-list"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="admin-pane hidden" id="admin-access" data-admin-pane="access">
+          <div class="admin-card">
+            <div class="card-heading"><div><p class="eyebrow dark">Admin Global</p><h3>Hak akses pengguna</h3></div><button class="text-button" id="refresh-access" type="button">Muat ulang</button></div>
+            <p>Pengguna baru berstatus “menunggu”. Tetapkan sebagai Admin Penjadwalan atau Admin Global setelah identitasnya dipastikan.</p>
+            <div class="admin-list" id="access-list"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div><strong>Tennis RW 008 Virgimontela</strong><span>Jadwal yang lebih tertib untuk permainan yang lebih menyenangkan.</span></div>
+    <div class="footer-links"><a href="/">Portal warga</a><a href="#atas">Kembali ke atas ↑</a></div>
+  </footer>
+
+  <dialog id="login-dialog" class="modal">
+    <form method="dialog" class="modal-close-form"><button aria-label="Tutup dialog login">×</button></form>
+    <div class="modal-content">
+      <p class="eyebrow dark">Area pengelola</p>
+      <h2>Login admin</h2>
+      <p>Gunakan akun yang telah diizinkan oleh Admin Global.</p>
+      <form id="login-form">
+        <label>Email<input id="login-email" type="email" autocomplete="email" required></label>
+        <label>Password<input id="login-password" type="password" autocomplete="current-password" minlength="8" required></label>
+        <p class="form-message" id="login-message" role="status"></p>
+        <button class="button button-primary full" type="submit">Masuk</button>
+      </form>
+      <details>
+        <summary>Belum punya akun admin?</summary>
+        <form id="signup-form">
+          <label>Nama lengkap<input id="signup-name" autocomplete="name" required></label>
+          <label>Email<input id="signup-email" type="email" autocomplete="email" required></label>
+          <label>Password<input id="signup-password" type="password" autocomplete="new-password" minlength="8" required></label>
+          <p class="form-message" id="signup-message" role="status"></p>
+          <button class="button button-outline full" type="submit">Daftar akun</button>
+        </form>
+      </details>
+    </div>
+  </dialog>
+
+  <dialog id="booking-dialog" class="modal booking-modal">
+    <form method="dialog" class="modal-close-form"><button aria-label="Tutup detail booking">×</button></form>
+    <div class="modal-content" id="booking-detail"></div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="/app.js?v=20260808-7" defer></script>
+</body>
+</html>

@@ -56,6 +56,8 @@ h3 { margin-bottom: .45rem; }
   border-bottom: 1px solid rgba(255,255,255,.1); backdrop-filter: blur(14px);
 }
 .brand { display: inline-flex; align-items: center; gap: .65rem; text-decoration: none; font-size: .88rem; font-weight: 750; letter-spacing: .06em; white-space: nowrap; }
+.brand img { width: 132px; height: auto; display: block; }
+.brand-context { padding-left: .65rem; color: #dce7e2; border-left: 1px solid rgba(255,255,255,.25); font-size: .67rem; letter-spacing: .08em; text-transform: uppercase; }
 .brand strong { color: var(--lime); }
 .brand-mark { width: 34px; height: 34px; display: grid; place-items: center; border: 1px solid rgba(219,234,114,.55); border-radius: 50%; color: var(--lime); font-family: Georgia, serif; font-size: 1.15rem; }
 .site-header nav { margin-left: auto; display: flex; align-items: center; gap: .1rem; overflow-x: auto; scrollbar-width: none; }
@@ -239,6 +241,7 @@ footer { padding: 2.2rem max(1rem, calc((100vw - 1180px) / 2)); display: flex; j
 footer strong, footer span { display: block; }
 footer span { margin-top: .2rem; color: #95aaa2; font-size: .85rem; }
 footer a { color: var(--lime); font-size: .85rem; font-weight: 750; }
+.footer-links { display: flex; gap: 1rem; align-items: center; }
 
 .modal { width: min(510px, calc(100% - 2rem)); max-height: calc(100vh - 2rem); padding: 0; border: 0; border-radius: 20px; color: var(--ink); background: white; box-shadow: var(--shadow); }
 .modal::backdrop { background: rgba(7,23,19,.72); backdrop-filter: blur(5px); }
@@ -279,6 +282,8 @@ footer a { color: var(--lime); font-size: .85rem; font-weight: 750; }
 @media (max-width: 700px) {
   .site-header { min-height: 66px; display: block; padding: .65rem 1rem .45rem; }
   .brand { margin-bottom: .4rem; }
+  .brand img { width: 118px; }
+  .brand-context { font-size: .6rem; }
   .site-header nav { margin: 0; }
   .site-header nav a:first-child { padding-left: 0; }
   .site-header nav a, .nav-login { font-size: .8rem; }
@@ -292,7 +297,9 @@ footer a { color: var(--lime); font-size: .85rem; font-weight: 750; }
   .rule-cards article > span { margin-bottom: 1.5rem; }
   .form-row { grid-template-columns: 1fr; gap: 0; }
   footer { display: block; }
+  .footer-links { margin-top: 1rem; }
   footer a { display: inline-block; margin-top: 1rem; }
+  .footer-links a { margin-top: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
