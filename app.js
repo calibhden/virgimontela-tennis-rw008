@@ -245,7 +245,7 @@ function renderSchedule() {
   const days = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"];
   let html = `<div class="schedule-header"><div class="schedule-corner">Hari · Court</div><div class="time-axis">`;
   for (let hour = 5; hour <= 22; hour += 1) {
-    html += `<span class="time-label" style="left:${(hour - 5) * HOUR_WIDTH}px">${String(hour).padStart(2, "0")}:00</span>`;
+    html += `<span class="time-label" data-left="${(hour - 5) * HOUR_WIDTH}">${String(hour).padStart(2, "0")}:00</span>`;
   }
   html += `</div></div>`;
 
@@ -262,6 +262,17 @@ function renderSchedule() {
     }
   }
   canvas.innerHTML = html;
+  applySchedulePositions(canvas);
+}
+
+function applySchedulePositions(canvas) {
+  canvas.querySelectorAll(".time-label[data-left]").forEach((label) => {
+    label.style.left = `${Number(label.dataset.left)}px`;
+  });
+  canvas.querySelectorAll(".booking-block[data-left][data-width]").forEach((booking) => {
+    booking.style.left = `${Number(booking.dataset.left)}px`;
+    booking.style.width = `${Number(booking.dataset.width)}px`;
+  });
 }
 
 function bookingBlock(booking) {
@@ -273,7 +284,7 @@ function bookingBlock(booking) {
   const startMinutes = hour * 60 + minute - 5 * 60;
   const durationMinutes = Math.round((end - start) / 60000);
   const className = booking.priority ? `priority-${booking.priority}` : booking.booking_type === "basket" ? "basket" : "incidental";
-  return `<button class="booking-block ${className}" type="button" data-booking-id="${escapeHtml(booking.id)}" style="left:${startMinutes * PX_PER_MINUTE}px;width:${Math.max(durationMinutes * PX_PER_MINUTE, 11)}px" aria-label="${escapeHtml(booking.title)}, ${formatTime(booking.start_at)} sampai ${formatTime(booking.end_at)}">
+  return `<button class="booking-block ${className}" type="button" data-booking-id="${escapeHtml(booking.id)}" data-left="${startMinutes * PX_PER_MINUTE}" data-width="${Math.max(durationMinutes * PX_PER_MINUTE, 11)}" aria-label="${escapeHtml(booking.title)}, ${formatTime(booking.start_at)} sampai ${formatTime(booking.end_at)}">
     <strong>${escapeHtml(booking.title)}</strong><span>${formatTime(booking.start_at)}–${formatTime(booking.end_at)}</span>
   </button>`;
 }
