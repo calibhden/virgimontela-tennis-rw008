@@ -7,6 +7,7 @@ Portal warga multi-halaman yang dipersiapkan untuk domain `virgimontela.org`.
 - `/` — portal utama Virgimontela
 - `/tennis` — jadwal booking, daftar pemain, aturan, dan panel admin tennis
 - `/tennis/aturan` — panduan lengkap penggunaan lapangan tennis
+- `/clubhouse` — ketentuan penggunaan Ruang Dolphin dan fasilitas Club House
 - `/tatatertib` — Panduan Tata Tertib Warga, edisi Januari 2026
 - `/peraturanmembangun` — halaman yang disiapkan untuk dokumen berikutnya
 
