@@ -52,15 +52,17 @@ h1, h2, h3 { line-height: 1.05; letter-spacing: -.035em; }
 .portal-section-heading { margin-bottom: 2rem; display: grid; grid-template-columns: 1fr minmax(280px, 420px); gap: 2rem; align-items: end; }
 .portal-section-heading h2 { max-width: 680px; margin-bottom: 0; font: 500 clamp(2.4rem, 5vw, 4.5rem)/1 Georgia, serif; }
 .portal-section-heading > p { margin-bottom: .3rem; color: var(--muted); }
-.service-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 1rem; }
-.service-card { position: relative; min-height: 430px; padding: 1.3rem; display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--line); border-radius: 22px; background: white; text-decoration: none; box-shadow: 0 10px 35px rgba(7,25,20,.05); transition: transform .18s ease, box-shadow .18s ease; }
+.service-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 1rem; }
+.service-card { position: relative; min-height: 390px; padding: 1.3rem; display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--line); border-radius: 22px; background: white; text-decoration: none; box-shadow: 0 10px 35px rgba(7,25,20,.05); transition: transform .18s ease, box-shadow .18s ease; }
 .service-card:hover, .service-card:focus-visible { transform: translateY(-5px); box-shadow: var(--shadow); outline: none; }
 .service-card.tennis { color: white; background: var(--forest-800); border-color: var(--forest-800); }
+.service-card.clubhouse { color: white; background: #77543f; border-color: #77543f; }
 .service-card.rules { background: #ede8da; }
 .service-card.building { background: #eff2ed; }
 .service-number { color: currentColor; opacity: .55; font: 700 .72rem/1 monospace; letter-spacing: .12em; }
 .service-icon { margin: 2.8rem 0 auto; width: 58px; height: 58px; display: grid; place-items: center; color: var(--forest-900); background: var(--gold); border-radius: 50%; font: 500 1.45rem/1 Georgia, serif; }
 .service-card.rules .service-icon { color: white; background: var(--forest-700); }
+.service-card.clubhouse .service-icon { color: #533725; background: #efd39a; font: 850 .9rem/1 Inter, ui-sans-serif, sans-serif; letter-spacing: .04em; }
 .service-card.building .service-icon { color: white; background: #75847b; }
 .service-kicker { margin: 1.4rem 0 .4rem; color: currentColor; opacity: .68; font-size: .7rem; font-weight: 850; letter-spacing: .14em; text-transform: uppercase; }
 .service-card h3 { margin-bottom: .7rem; font: 500 clamp(1.8rem, 3vw, 2.45rem)/1.05 Georgia, serif; }
