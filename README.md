@@ -1,3 +1,4 @@
+/opt/homebrew/Library/Homebrew/cmd/shellenv.sh: line 18: /bin/ps: Operation not permitted
 # Portal Virgimontela RW 008
 
 Portal warga multi-halaman yang dipersiapkan untuk domain `virgimontela.org`.
@@ -9,7 +10,7 @@ Portal warga multi-halaman yang dipersiapkan untuk domain `virgimontela.org`.
 - `/tennis/aturan` — panduan lengkap penggunaan lapangan tennis
 - `/clubhouse` — ketentuan penggunaan Ruang Dolphin dan fasilitas Club House
 - `/tatatertib` — Panduan Tata Tertib Warga, edisi Januari 2026
-- `/peraturanmembangun` — halaman yang disiapkan untuk dokumen berikutnya
+- `/peraturanmembangun` — panduan renovasi dan pembangunan lingkungan
 
 ## Data dan deployment
 
