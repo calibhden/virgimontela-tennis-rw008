@@ -227,6 +227,10 @@ h3 { margin-bottom: .45rem; }
 .mini-button { padding: .35rem .55rem; border: 1px solid var(--line); border-radius: 8px; color: var(--green-800); background: white; cursor: pointer; font-size: .74rem; font-weight: 750; }
 .mini-button.danger { color: #91312c; }
 .role-select { min-height: 36px; padding: .35rem; border: 1px solid var(--line); border-radius: 8px; background: white; }
+.access-grid { grid-template-columns: minmax(300px,.7fr) minmax(460px,1.3fr); }
+.access-role-note { margin: .2rem 0 1rem; padding: .8rem .9rem; color: var(--green-800); background: var(--green-100); border-radius: 10px; }
+.access-role-note strong, .access-role-note span { display: block; }
+.access-role-note span { margin-top: .2rem; color: var(--ink-soft); font-size: .74rem; }
 .badge { display: inline-block; padding: .16rem .42rem; border-radius: 999px; color: var(--green-800); background: var(--green-100); font-size: .68rem; font-weight: 800; }
 .badge.cancelled { color: #93332e; background: #fbe3e1; }
 .badge.pending { color: #795e0a; background: #fff0b9; }
@@ -277,6 +281,7 @@ footer a { color: var(--lime); font-size: .85rem; font-weight: 750; }
   .hero-status { max-width: 360px; }
   .player-grid, .rule-cards { grid-template-columns: repeat(2,minmax(0,1fr)); }
   .admin-grid { grid-template-columns: 1fr; }
+  .access-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 700px) {
