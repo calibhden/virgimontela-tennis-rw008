@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#102c26">
   <meta name="description" content="Jadwal, daftar pemain, dan aturan penggunaan Lapangan Tennis RW 008 Virgimontela.">
   <title>Tennis RW 008 Virgimontela</title>
-  <link rel="stylesheet" href="/styles.css?v=20260808-7">
+  <link rel="stylesheet" href="/styles.css?v=20260810-1">
   <link rel="manifest" href="/manifest.webmanifest">
 </head>
 <body>
@@ -263,10 +263,29 @@
         </div>
 
         <div class="admin-pane hidden" id="admin-access" data-admin-pane="access">
-          <div class="admin-card">
-            <div class="card-heading"><div><p class="eyebrow dark">Admin Global</p><h3>Hak akses pengguna</h3></div><button class="text-button" id="refresh-access" type="button">Muat ulang</button></div>
-            <p>Pengguna baru berstatus “menunggu”. Tetapkan sebagai Admin Penjadwalan atau Admin Global setelah identitasnya dipastikan.</p>
-            <div class="admin-list" id="access-list"></div>
+          <div class="admin-grid access-grid">
+            <form class="admin-card" id="invite-admin-form">
+              <div class="card-heading"><div><p class="eyebrow dark">Khusus Admin Global</p><h3>Undang admin baru</h3></div></div>
+              <p>Undangan dikirim melalui email. Penerima membuat password saat membuka tautan, lalu dapat langsung masuk sesuai peran yang Anda pilih.</p>
+              <label>Nama lengkap<input id="invite-admin-name" maxlength="100" autocomplete="name" placeholder="Nama penerima"></label>
+              <label>Email<input id="invite-admin-email" type="email" maxlength="160" autocomplete="email" required placeholder="nama@email.com"></label>
+              <label>Peran<select id="invite-admin-role" required>
+                <option value="scheduling_admin">Admin Penjadwalan</option>
+                <option value="global_admin">Admin Global</option>
+              </select></label>
+              <div class="access-role-note" id="invite-role-note">
+                <strong>Admin Penjadwalan</strong>
+                <span>Dapat mengelola booking dan data pemain, tetapi tidak dapat memberikan akses admin.</span>
+              </div>
+              <p class="form-message" id="invite-admin-message" role="status"></p>
+              <button class="button button-primary full" id="invite-admin-submit" type="submit">Kirim undangan</button>
+            </form>
+
+            <div class="admin-card">
+              <div class="card-heading"><div><p class="eyebrow dark">Admin Global</p><h3>Hak akses pengguna</h3></div><button class="text-button" id="refresh-access" type="button">Muat ulang</button></div>
+              <p>Anda dapat mengubah peran pengguna yang sudah terdaftar. Pastikan identitas dan kebutuhan aksesnya telah diperiksa.</p>
+              <div class="admin-list" id="access-list"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -308,7 +327,21 @@
     <div class="modal-content" id="booking-detail"></div>
   </dialog>
 
+  <dialog id="invite-password-dialog" class="modal">
+    <div class="modal-content">
+      <p class="eyebrow dark">Undangan admin</p>
+      <h2>Buat password</h2>
+      <p>Undangan Anda sudah dikonfirmasi. Buat password untuk masuk ke Panel Admin Virgimontela.</p>
+      <form id="invite-password-form">
+        <label>Password baru<input id="invite-password" type="password" autocomplete="new-password" minlength="8" required></label>
+        <label>Ulangi password<input id="invite-password-confirm" type="password" autocomplete="new-password" minlength="8" required></label>
+        <p class="form-message" id="invite-password-message" role="status"></p>
+        <button class="button button-primary full" type="submit">Simpan password dan masuk</button>
+      </form>
+    </div>
+  </dialog>
+
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="/app.js?v=20260808-7" defer></script>
+  <script src="/app.js?v=20260810-1" defer></script>
 </body>
 </html>
