@@ -1,0 +1,367 @@
+/opt/homebrew/Library/Homebrew/cmd/shellenv.sh: line 18: /bin/ps: Operation not permitted
+.building-page .rules-hero {
+  min-height: 620px;
+}
+
+.building-page .rules-hero-image {
+  background-position: center 62%;
+  filter: saturate(.52) contrast(1.04);
+}
+
+.building-page .rules-hero-overlay {
+  background:
+    linear-gradient(90deg, rgba(5,21,16,.96), rgba(5,21,16,.68) 65%, rgba(5,21,16,.32)),
+    linear-gradient(0deg, rgba(5,21,16,.9), transparent 68%);
+}
+
+.building-page .rules-hero h1 {
+  max-width: 950px;
+  font-size: clamp(3.5rem, 7.5vw, 6.8rem);
+}
+
+.chapter-intro {
+  max-width: 700px;
+  margin-bottom: 1.5rem;
+  color: var(--muted);
+}
+
+.category-grid,
+.permit-grid,
+.sanction-steps {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .8rem;
+}
+
+.category-card {
+  padding: 1.35rem;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #f6f7f3;
+}
+
+.category-card.major-work {
+  color: white;
+  background: var(--forest-800);
+  border-color: var(--forest-800);
+}
+
+.category-card .card-label {
+  margin-bottom: .55rem;
+  color: var(--forest-700);
+  font-size: .68rem;
+  font-weight: 850;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+
+.category-card.major-work .card-label {
+  color: #dbc68e;
+}
+
+.category-card h3 {
+  margin-bottom: .65rem;
+  font: 500 1.45rem/1.12 Georgia, serif;
+}
+
+.category-card > p:not(.card-label) {
+  color: var(--muted);
+  font-size: .86rem;
+}
+
+.category-card.major-work > p:not(.card-label) {
+  color: #d5e0da;
+}
+
+.category-card ul {
+  margin: 1rem 0 0;
+  padding-left: 1.1rem;
+  color: #45564e;
+  font-size: .82rem;
+}
+
+.category-card.major-work ul {
+  color: #dce6e0;
+}
+
+.category-card li + li {
+  margin-top: .35rem;
+}
+
+.responsibility-banner {
+  margin-top: .8rem;
+  padding: 1rem 1.1rem;
+  display: grid;
+  grid-template-columns: minmax(190px, .6fr) 1fr;
+  gap: 1rem;
+  align-items: center;
+  color: #5f522f;
+  background: #f5ecd3;
+  border-left: 4px solid var(--gold);
+  border-radius: 12px;
+}
+
+.responsibility-banner span {
+  font-size: .82rem;
+}
+
+.permit-notice {
+  margin-bottom: 1rem;
+  padding: 1.1rem 1.2rem;
+  color: white;
+  background: var(--forest-950);
+  border-radius: 14px;
+}
+
+.permit-notice strong {
+  color: #e0c886;
+  font: 500 1.25rem/1.2 Georgia, serif;
+}
+
+.permit-notice p {
+  margin: .4rem 0 0;
+  color: #cfddd5;
+  font-size: .84rem;
+}
+
+.permit-grid article {
+  padding: 1.15rem;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #f6f7f3;
+}
+
+.permit-grid article > span {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  color: white;
+  background: var(--forest-700);
+  border-radius: 50%;
+  font: 800 .7rem/1 monospace;
+}
+
+.permit-grid h3 {
+  margin: 1.4rem 0 .5rem;
+  font: 500 1.35rem/1.1 Georgia, serif;
+}
+
+.permit-grid p {
+  color: var(--muted);
+  font-size: .82rem;
+}
+
+.permit-grid a {
+  color: var(--forest-700);
+  font-size: .78rem;
+  font-weight: 850;
+}
+
+.neighbor-map {
+  width: min(450px, 100%);
+  margin: 0 auto 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-areas:
+    ". front ."
+    "left project right"
+    ". back .";
+  gap: .55rem;
+  text-align: center;
+}
+
+.neighbor-map span,
+.neighbor-map strong {
+  min-height: 66px;
+  padding: .65rem;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  font-size: .78rem;
+}
+
+.neighbor-map span {
+  color: var(--forest-800);
+  background: #e4ebe6;
+  border: 1px solid #ccd9d1;
+  font-weight: 800;
+}
+
+.neighbor-map span:nth-child(1) { grid-area: front; }
+.neighbor-map span:nth-child(2) { grid-area: left; }
+.neighbor-map strong { grid-area: project; color: white; background: var(--forest-800); }
+.neighbor-map span:nth-child(4) { grid-area: right; }
+.neighbor-map span:nth-child(5) { grid-area: back; }
+
+.schedule-note {
+  margin-bottom: 1rem;
+  padding: 1rem 1.1rem;
+  display: flex;
+  gap: 1rem;
+  align-items: baseline;
+  color: white;
+  background: var(--forest-800);
+  border-radius: 12px;
+}
+
+.schedule-note strong {
+  flex: 0 0 auto;
+}
+
+.schedule-note p {
+  margin: 0;
+  color: #d7e2dc;
+  font-size: .8rem;
+}
+
+.sanction-steps {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-bottom: 1.2rem;
+}
+
+.sanction-steps article {
+  position: relative;
+  min-height: 190px;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #f6f7f3;
+}
+
+.sanction-steps article:nth-child(3) {
+  color: white;
+  background: var(--forest-800);
+  border-color: var(--forest-800);
+}
+
+.sanction-steps span {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  color: var(--forest-800);
+  background: #e1c983;
+  border-radius: 50%;
+  font: 800 .72rem/1 monospace;
+}
+
+.sanction-steps h3 {
+  margin: 2.2rem 0 .5rem;
+  font-size: .98rem;
+}
+
+.sanction-steps p {
+  margin: 0;
+  color: var(--muted);
+  font-size: .78rem;
+}
+
+.sanction-steps article:nth-child(3) p {
+  color: #d5e1da;
+}
+
+.source-panel {
+  padding: clamp(1.4rem, 4vw, 2.3rem);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  color: white;
+  background: var(--forest-950);
+  border-radius: 22px;
+}
+
+.source-panel h2 {
+  margin-bottom: .8rem;
+  font: 500 clamp(1.8rem, 3.5vw, 2.7rem)/1 Georgia, serif;
+}
+
+.source-panel p:not(.eyebrow) {
+  margin: 0;
+  color: #b9cbc1;
+  font-size: .82rem;
+}
+
+.source-contacts {
+  display: grid;
+  gap: .55rem;
+}
+
+.source-contacts a {
+  padding: .8rem .9rem;
+  display: block;
+  color: white;
+  border: 1px solid rgba(255,255,255,.16);
+  border-radius: 10px;
+  text-decoration: none;
+}
+
+.source-contacts a:hover,
+.source-contacts a:focus-visible {
+  background: rgba(255,255,255,.08);
+  outline: none;
+}
+
+.source-contacts span,
+.source-contacts strong {
+  display: block;
+}
+
+.source-contacts span {
+  color: #8fa69a;
+  font-size: .66rem;
+}
+
+.source-contacts strong {
+  margin-top: .15rem;
+  color: #e1ca8c;
+  font-size: .76rem;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 700px) {
+  .building-page .rules-hero {
+    min-height: 680px;
+  }
+
+  .building-page .rules-hero h1 {
+    font-size: clamp(3rem, 14vw, 4.7rem);
+  }
+
+  .category-grid,
+  .permit-grid,
+  .sanction-steps,
+  .source-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .responsibility-banner {
+    grid-template-columns: 1fr;
+    gap: .35rem;
+  }
+
+  .schedule-note {
+    display: block;
+  }
+
+  .schedule-note p {
+    margin-top: .35rem;
+  }
+
+  .sanction-steps article {
+    min-height: 155px;
+  }
+}
+
+@media print {
+  .source-panel {
+    color: var(--ink);
+    background: white;
+    border: 1px solid var(--line);
+  }
+
+  .source-panel p:not(.eyebrow),
+  .source-contacts strong {
+    color: var(--ink);
+  }
+}
