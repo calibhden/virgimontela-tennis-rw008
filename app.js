@@ -15,6 +15,7 @@ const state = {
   profile: null,
   adminBookings: [],
   adminPlayers: [],
+  accessProfiles: [],
 };
 
 const el = (id) => document.getElementById(id);
@@ -826,21 +827,30 @@ async function loadAccessList() {
   if (state.profile?.role !== "global_admin") return;
   try {
     const profiles = await api("profiles?select=id,email,full_name,role,is_active&order=created_at.asc", { authenticated: true });
-    el("access-list").innerHTML = profiles.map((profile) => `
+    state.accessProfiles = profiles;
+    el("access-list").innerHTML = profiles.map((profile) => {
+      const isSelf = profile.id === state.profile.id;
+      const disabled = isSelf ? "disabled" : "";
+      return `
       <div class="admin-list-item">
         <div class="admin-list-main">
-          <div><strong>${escapeHtml(profile.full_name || profile.email)}</strong><p>${escapeHtml(profile.email)}</p></div>
+          <div>
+            <strong>${escapeHtml(profile.full_name || profile.email)}</strong>
+            <p>${escapeHtml(profile.email)}${isSelf ? " · Akun Anda" : ""}</p>
+          </div>
           <span class="badge ${profile.role === "pending" ? "pending" : ""}">${escapeHtml(roleLabel(profile.role))}</span>
         </div>
         <div class="admin-list-actions">
-          <select class="role-select" data-role-for="${escapeHtml(profile.id)}" aria-label="Peran untuk ${escapeHtml(profile.email)}">
+          <select class="role-select" data-role-for="${escapeHtml(profile.id)}" aria-label="Peran untuk ${escapeHtml(profile.email)}" ${disabled}>
             <option value="pending" ${profile.role === "pending" ? "selected" : ""}>Menunggu</option>
             <option value="scheduling_admin" ${profile.role === "scheduling_admin" ? "selected" : ""}>Admin Penjadwalan</option>
             <option value="global_admin" ${profile.role === "global_admin" ? "selected" : ""}>Admin Global</option>
           </select>
-          <button class="mini-button" type="button" data-save-role="${escapeHtml(profile.id)}">Simpan akses</button>
+          <button class="mini-button" type="button" data-save-role="${escapeHtml(profile.id)}" ${disabled}>Simpan akses</button>
+          <button class="mini-button danger" type="button" data-delete-admin="${escapeHtml(profile.id)}" ${disabled}>Hapus admin</button>
         </div>
-      </div>`).join("");
+      </div>`;
+    }).join("");
   } catch (error) {
     el("access-list").innerHTML = `<p class="empty-state">${escapeHtml(error.message)}</p>`;
   }
@@ -913,18 +923,30 @@ async function saveInvitedPassword(event) {
 }
 
 async function onAccessAction(event) {
-  const button = event.target.closest("[data-save-role]");
+  const button = event.target.closest("[data-save-role], [data-delete-admin]");
   if (!button) return;
-  const userId = button.dataset.saveRole;
-  const select = document.querySelector(`[data-role-for="${CSS.escape(userId)}"]`);
+  const userId = button.dataset.saveRole || button.dataset.deleteAdmin;
+  const profile = state.accessProfiles.find((item) => item.id === userId);
+  if (!profile) return toast("Data admin tidak ditemukan. Silakan muat ulang.");
+  if (userId === state.profile?.id) return toast("Akun Anda sendiri tidak dapat diubah atau dihapus.");
+
+  const isDelete = Boolean(button.dataset.deleteAdmin);
+  if (isDelete) {
+    const label = profile.full_name || profile.email;
+    const confirmed = window.confirm(`Hapus akun admin ${label}?\n\nAkun login dan seluruh hak aksesnya akan dihapus. Tindakan ini tidak dapat dibatalkan.`);
+    if (!confirmed) return;
+  }
+
   button.disabled = true;
   try {
-    await api("rpc/set_user_access", {
-      method: "POST",
-      body: { target_user_id: userId, new_role: select.value, new_is_active: true },
-      authenticated: true,
-    });
-    toast("Hak akses diperbarui");
+    if (isDelete) {
+      await functionRequest("manage-admin", { action: "delete", targetUserId: userId });
+      toast("Admin berhasil dihapus");
+    } else {
+      const select = document.querySelector(`[data-role-for="${CSS.escape(userId)}"]`);
+      await functionRequest("manage-admin", { action: "update_role", targetUserId: userId, role: select.value });
+      toast("Hak akses diperbarui");
+    }
     await loadAccessList();
   } catch (error) { toast(error.message); }
   finally { button.disabled = false; }
