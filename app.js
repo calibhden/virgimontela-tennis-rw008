@@ -22,10 +22,14 @@ const el = (id) => document.getElementById(id);
 document.addEventListener("DOMContentLoaded", init);
 
 async function init() {
+  const authRedirectType = await consumeAuthRedirect();
   bindEvents();
   setBookingDateDefault();
   await Promise.all([loadSchedule(), loadPlayers()]);
   if (state.session) await restoreAdminSession();
+  if (authRedirectType === "invite" || authRedirectType === "recovery") {
+    el("invite-password-dialog").showModal();
+  }
 }
 
 function bindEvents() {
@@ -63,6 +67,9 @@ function bindEvents() {
   el("admin-player-list").addEventListener("click", onAdminPlayerAction);
   el("refresh-access").addEventListener("click", loadAccessList);
   el("access-list").addEventListener("click", onAccessAction);
+  el("invite-admin-form").addEventListener("submit", inviteAdmin);
+  el("invite-admin-role").addEventListener("change", updateInviteRoleNote);
+  el("invite-password-form").addEventListener("submit", saveInvitedPassword);
 }
 
 function startOfWeek(date) {
@@ -185,17 +192,40 @@ async function api(path, { method = "GET", body, prefer, authenticated = false, 
   return payload;
 }
 
-async function authRequest(path, body, token) {
+async function authRequest(path, body, token, method = "POST") {
   const headers = { apikey: SUPABASE_KEY, "Content-Type": "application/json" };
   if (token) headers.Authorization = `Bearer ${token}`;
   const response = await fetch(`${SUPABASE_URL}/auth/v1/${path}`, {
-    method: "POST",
+    method,
     headers,
     body: body === undefined ? undefined : JSON.stringify(body),
   });
   const payload = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(payload.msg || payload.message || "Autentikasi gagal");
   return payload;
+}
+
+async function consumeAuthRedirect() {
+  if (!location.hash.includes("access_token=")) return null;
+  const params = new URLSearchParams(location.hash.slice(1));
+  const accessToken = params.get("access_token");
+  const refreshToken = params.get("refresh_token");
+  const type = params.get("type");
+  if (!accessToken || !refreshToken) return null;
+  try {
+    const user = await authRequest("user", undefined, accessToken, "GET");
+    saveSession({
+      access_token: accessToken,
+      refresh_token: refreshToken,
+      token_type: params.get("token_type") || "bearer",
+      expires_in: Number(params.get("expires_in") || 3600),
+      user,
+    });
+    history.replaceState(null, "", `${location.pathname}#admin`);
+    return type;
+  } catch {
+    return null;
+  }
 }
 
 function readSession() {
@@ -504,6 +534,13 @@ function roleLabel(role) {
   return { pending: "Menunggu aktivasi", scheduling_admin: "Admin Penjadwalan", global_admin: "Admin Global" }[role] || role;
 }
 
+function updateInviteRoleNote() {
+  const isGlobal = el("invite-admin-role").value === "global_admin";
+  el("invite-role-note").innerHTML = isGlobal
+    ? `<strong>Admin Global</strong><span>Memiliki seluruh akses, termasuk mengundang admin baru dan mengubah peran pengguna.</span>`
+    : `<strong>Admin Penjadwalan</strong><span>Dapat mengelola booking dan data pemain, tetapi tidak dapat memberikan akses admin.</span>`;
+}
+
 function selectAdminTab(tab) {
   document.querySelectorAll(".admin-tab").forEach((button) => button.classList.toggle("active", button.dataset.adminTab === tab));
   document.querySelectorAll(".admin-pane").forEach((pane) => pane.classList.toggle("hidden", pane.dataset.adminPane !== tab));
@@ -806,6 +843,72 @@ async function loadAccessList() {
       </div>`).join("");
   } catch (error) {
     el("access-list").innerHTML = `<p class="empty-state">${escapeHtml(error.message)}</p>`;
+  }
+}
+
+async function functionRequest(name, body, retry = true) {
+  const response = await fetch(`${SUPABASE_URL}/functions/v1/${name}`, {
+    method: "POST",
+    headers: {
+      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${state.session?.access_token || ""}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+  if (response.status === 401 && retry && state.session?.refresh_token) {
+    const refreshed = await refreshSession();
+    if (refreshed) return functionRequest(name, body, false);
+  }
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(payload.error || payload.message || `Permintaan gagal (${response.status})`);
+  return payload;
+}
+
+async function inviteAdmin(event) {
+  event.preventDefault();
+  if (state.profile?.role !== "global_admin") return;
+  const message = el("invite-admin-message");
+  const button = el("invite-admin-submit");
+  button.disabled = true;
+  setMessage(message, "Mengirim undangan…");
+  try {
+    const result = await functionRequest("invite-admin", {
+      email: el("invite-admin-email").value.trim(),
+      fullName: el("invite-admin-name").value.trim(),
+      role: el("invite-admin-role").value,
+    });
+    setMessage(message, result.status === "invited"
+      ? "Undangan berhasil dikirim. Penerima perlu membuka email dan membuat password."
+      : "Pengguna sudah terdaftar; hak aksesnya berhasil diperbarui.");
+    el("invite-admin-form").reset();
+    updateInviteRoleNote();
+    await loadAccessList();
+  } catch (error) {
+    setMessage(message, error.message, true);
+  } finally {
+    button.disabled = false;
+  }
+}
+
+async function saveInvitedPassword(event) {
+  event.preventDefault();
+  const message = el("invite-password-message");
+  const password = el("invite-password").value;
+  if (password !== el("invite-password-confirm").value) {
+    return setMessage(message, "Kedua password belum sama.", true);
+  }
+  setMessage(message, "Menyimpan password…");
+  try {
+    await authRequest("user", { password }, state.session.access_token, "PUT");
+    setMessage(message, "Password berhasil dibuat.");
+    await restoreAdminSession();
+    setTimeout(() => {
+      el("invite-password-dialog").close();
+      el("admin").scrollIntoView({ behavior: "smooth" });
+    }, 500);
+  } catch (error) {
+    setMessage(message, translateAuthError(error.message), true);
   }
 }
 
