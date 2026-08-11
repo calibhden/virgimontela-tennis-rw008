@@ -2,8 +2,8 @@ const SUPABASE_URL = "https://uakhvqjqyplkuxfleggk.supabase.co";
 const SUPABASE_KEY = "sb_publishable_5nSODU833YAt89vnbNaUGA_MtqGYGAR";
 const SESSION_KEY = "virgimontela_admin_session";
 const JAKARTA_TZ = "Asia/Jakarta";
-const HOUR_WIDTH = 72;
-const PX_PER_MINUTE = HOUR_WIDTH / 60;
+const SCHEDULE_HOURS = 17;
+const SCHEDULE_MINUTES = SCHEDULE_HOURS * 60;
 
 const state = {
   weekStart: startOfWeek(new Date()),
@@ -283,7 +283,7 @@ function renderSchedule() {
   const days = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"];
   let html = `<div class="schedule-header"><div class="schedule-corner">Hari · Court</div><div class="time-axis">`;
   for (let hour = 5; hour <= 22; hour += 1) {
-    html += `<span class="time-label" data-left="${(hour - 5) * HOUR_WIDTH}">${String(hour).padStart(2, "0")}:00</span>`;
+    html += `<span class="time-label" data-left="${((hour - 5) / SCHEDULE_HOURS) * 100}">${String(hour).padStart(2, "0")}:00</span>`;
   }
   html += `</div></div>`;
 
@@ -305,11 +305,11 @@ function renderSchedule() {
 
 function applySchedulePositions(canvas) {
   canvas.querySelectorAll(".time-label[data-left]").forEach((label) => {
-    label.style.left = `${Number(label.dataset.left)}px`;
+    label.style.left = `${Number(label.dataset.left)}%`;
   });
   canvas.querySelectorAll(".booking-block[data-left][data-width]").forEach((booking) => {
-    booking.style.left = `${Number(booking.dataset.left)}px`;
-    booking.style.width = `${Number(booking.dataset.width)}px`;
+    booking.style.left = `${Number(booking.dataset.left)}%`;
+    booking.style.width = `${Number(booking.dataset.width)}%`;
   });
 }
 
@@ -321,8 +321,10 @@ function bookingBlock(booking) {
   const minute = Number(parts.find((part) => part.type === "minute").value);
   const startMinutes = hour * 60 + minute - 5 * 60;
   const durationMinutes = Math.round((end - start) / 60000);
+  const leftPercent = (startMinutes / SCHEDULE_MINUTES) * 100;
+  const widthPercent = (durationMinutes / SCHEDULE_MINUTES) * 100;
   const className = booking.priority ? `priority-${booking.priority}` : booking.booking_type === "basket" ? "basket" : "incidental";
-  return `<button class="booking-block ${className}" type="button" data-booking-id="${escapeHtml(booking.id)}" data-left="${startMinutes * PX_PER_MINUTE}" data-width="${Math.max(durationMinutes * PX_PER_MINUTE, 11)}" aria-label="${escapeHtml(booking.title)}, ${formatTime(booking.start_at)} sampai ${formatTime(booking.end_at)}">
+  return `<button class="booking-block ${className}" type="button" data-booking-id="${escapeHtml(booking.id)}" data-left="${leftPercent}" data-width="${widthPercent}" aria-label="${escapeHtml(booking.title)}, ${formatTime(booking.start_at)} sampai ${formatTime(booking.end_at)}">
     <strong>${escapeHtml(booking.title)}</strong><span>${formatTime(booking.start_at)}–${formatTime(booking.end_at)}</span>
   </button>`;
 }
