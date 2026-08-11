@@ -345,7 +345,8 @@ async function onScheduleClick(event) {
   let matchedPlayers = bookingPlayers(booking);
   if (canManageSchedule()) {
     try {
-      matchedPlayers = await loadLinkedBookingPlayers(booking.id);
+      const linkedPlayers = await loadLinkedBookingPlayers(booking.id);
+      if (linkedPlayers.length) matchedPlayers = linkedPlayers;
     } catch {
       // Keep the title-based matches if the authenticated lookup is temporarily unavailable.
     }
