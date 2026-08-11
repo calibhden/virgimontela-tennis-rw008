@@ -17,6 +17,7 @@
   --shadow: 0 20px 60px rgba(16, 44, 38, .12);
   --radius: 18px;
   --hour-width: 72px;
+  --quarter-width: 18px;
   --timeline-width: 1224px;
 }
 
@@ -163,8 +164,8 @@ h3 { margin-bottom: .45rem; }
 .row-label span { color: var(--ink-soft); font-size: .68rem; }
 .row-label b { width: 24px; height: 24px; display: grid; place-items: center; border-radius: 50%; color: white; background: var(--green-800); font-size: .72rem; }
 .timeline-row { position: relative; width: var(--timeline-width); min-width: var(--timeline-width); min-height: 57px; background:
-  repeating-linear-gradient(to right, transparent 0 17px, #eef2ef 17px 18px),
-  repeating-linear-gradient(to right, transparent 0 71px, #cbd7d1 71px 72px);
+  repeating-linear-gradient(to right, transparent 0 calc(var(--quarter-width) - 1px), #eef2ef calc(var(--quarter-width) - 1px) var(--quarter-width)),
+  repeating-linear-gradient(to right, transparent 0 calc(var(--hour-width) - 1px), #cbd7d1 calc(var(--hour-width) - 1px) var(--hour-width));
 }
 .booking-block { position: absolute; top: 7px; height: 43px; min-width: 11px; padding: .25rem .38rem; overflow: hidden; border: 0; border-radius: 7px; color: white; text-align: left; cursor: pointer; box-shadow: 0 4px 10px rgba(16,44,38,.12); }
 .booking-block.priority-2 { color: #493b0a; }
@@ -277,7 +278,50 @@ footer a { color: var(--lime); font-size: .85rem; font-weight: 750; }
 .toast { position: fixed; left: 50%; bottom: 1.2rem; z-index: 80; transform: translate(-50%, 120px); max-width: calc(100% - 2rem); padding: .7rem 1rem; border-radius: 999px; color: white; background: var(--green-950); box-shadow: var(--shadow); opacity: 0; transition: .25s ease; font-size: .86rem; }
 .toast.show { transform: translate(-50%,0); opacity: 1; }
 
+@media (min-width: 961px) {
+  .schedule-section { padding-top: 1.1rem; padding-bottom: 1.25rem; }
+  .schedule-section .section-heading { margin-bottom: .55rem; }
+  .schedule-heading-row .eyebrow { margin-bottom: .15rem; font-size: .64rem; }
+  .schedule-heading-row h2 { margin-bottom: .15rem; font-size: 2rem; }
+  #week-label { margin-bottom: 0; font-size: .76rem; }
+  .schedule-legend { margin-bottom: .5rem; gap: .35rem .8rem; font-size: .7rem; }
+  .legend-dot { width: 8px; height: 8px; }
+  .schedule-shell, .schedule-canvas { min-height: 0; }
+  .schedule-loading, .schedule-error { min-height: 442px; }
+  .schedule-scroll { overflow: hidden; }
+  .schedule-canvas, .schedule-header, .schedule-row { width: 100%; min-width: 100%; }
+  .schedule-header, .schedule-row { grid-template-columns: 92px minmax(0, 1fr); }
+  .schedule-header { height: 34px; }
+  .schedule-corner { font-size: .58rem; letter-spacing: .05em; }
+  .time-axis, .timeline-row { width: 100%; min-width: 0; }
+  .time-axis {
+    height: 34px;
+    background-image: linear-gradient(to right, transparent calc(100% - 1px), #bdcbc4 0);
+    background-size: 5.8823529412% 100%;
+  }
+  .time-label { top: 8px; font-size: .61rem; }
+  .time-label:last-child { transform: translateX(calc(-100% - 4px)); }
+  .schedule-row, .timeline-row { min-height: 29px; }
+  .row-label { padding: .18rem .4rem; grid-template-columns: minmax(0, 1fr) 18px; gap: .2rem; }
+  .row-label > div { display: flex; align-items: baseline; gap: .22rem; white-space: nowrap; }
+  .row-label strong { font-size: .65rem; }
+  .row-label span { font-size: .55rem; }
+  .row-label b { width: 18px; height: 18px; font-size: .58rem; }
+  .timeline-row {
+    background-image:
+      linear-gradient(to right, transparent calc(100% - 1px), #eef2ef 0),
+      linear-gradient(to right, transparent calc(100% - 1px), #cbd7d1 0);
+    background-size: 1.4705882353% 100%, 5.8823529412% 100%;
+  }
+  .booking-block { top: 3px; height: 23px; min-width: 6px; padding: .08rem .2rem; border-radius: 4px; box-shadow: 0 2px 5px rgba(16,44,38,.12); }
+  .booking-block strong { font-size: .58rem; line-height: 1.05; }
+  .booking-block span { font-size: .49rem; line-height: 1.05; }
+  .scroll-hint { margin: .35rem 0 0; font-size: .68rem; }
+  .mobile-schedule-hint { display: none; }
+}
+
 @media (max-width: 960px) {
+  .desktop-schedule-hint { display: none; }
   .hero { grid-template-columns: 1fr; align-items: center; }
   .hero-status { max-width: 360px; }
   .player-grid, .rule-cards { grid-template-columns: repeat(2,minmax(0,1fr)); }
