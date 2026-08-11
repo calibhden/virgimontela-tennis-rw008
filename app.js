@@ -1,3 +1,4 @@
+/opt/homebrew/Library/Homebrew/cmd/shellenv.sh: line 18: /bin/ps: Operation not permitted
 const SUPABASE_URL = "https://uakhvqjqyplkuxfleggk.supabase.co";
 const SUPABASE_KEY = "sb_publishable_5nSODU833YAt89vnbNaUGA_MtqGYGAR";
 const SESSION_KEY = "virgimontela_admin_session";
@@ -7,6 +8,7 @@ const SCHEDULE_MINUTES = SCHEDULE_HOURS * 60;
 
 const state = {
   weekStart: startOfWeek(new Date()),
+  adminBookingStart: startOfWeek(new Date()),
   bookings: [],
   bookingMap: new Map(),
   players: [],
@@ -16,6 +18,7 @@ const state = {
   adminBookings: [],
   adminPlayers: [],
   accessProfiles: [],
+  bookingPlayerEditor: { bookingId: null, selected: new Set() },
 };
 
 const el = (id) => document.getElementById(id);
@@ -60,7 +63,13 @@ function bindEvents() {
   el("booking-form").addEventListener("submit", saveBooking);
   el("reset-booking-form").addEventListener("click", resetBookingForm);
   el("refresh-admin-bookings").addEventListener("click", loadAdminBookings);
+  el("admin-prev-week").addEventListener("click", () => shiftAdminBookingPeriod(-7));
+  el("admin-current-week").addEventListener("click", resetAdminBookingPeriod);
+  el("admin-next-week").addEventListener("click", () => shiftAdminBookingPeriod(7));
   el("admin-booking-list").addEventListener("click", onAdminBookingAction);
+  el("booking-player-search").addEventListener("input", renderBookingPlayerChecklist);
+  el("booking-players-form").addEventListener("change", onBookingPlayerSelectionChange);
+  el("booking-players-form").addEventListener("submit", saveBookingPlayers);
   el("player-form").addEventListener("submit", savePlayer);
   el("reset-player-form").addEventListener("click", resetPlayerForm);
   el("refresh-admin-players").addEventListener("click", loadAdminPlayers);
@@ -329,11 +338,24 @@ function bookingBlock(booking) {
   </button>`;
 }
 
-function onScheduleClick(event) {
+async function onScheduleClick(event) {
   const button = event.target.closest("[data-booking-id]");
   if (!button) return;
   const booking = state.bookingMap.get(button.dataset.bookingId);
   if (!booking) return;
+  let matchedPlayers = bookingPlayers(booking);
+  if (canManageSchedule()) {
+    try {
+      matchedPlayers = await loadLinkedBookingPlayers(booking.id);
+    } catch {
+      // Keep the title-based matches if the authenticated lookup is temporarily unavailable.
+    }
+  }
+  renderBookingDetail(booking, matchedPlayers);
+  el("booking-dialog").showModal();
+}
+
+function renderBookingDetail(booking, matchedPlayers) {
   const labels = {
     mabar_warga: "Mabar warga",
     private: "Private / coaching",
@@ -341,7 +363,7 @@ function onScheduleClick(event) {
     incidental: "Insidental",
     basket: "Basket",
   };
-  const matchedPlayers = bookingPlayers(booking);
+  const adminActions = canManageSchedule();
   el("booking-detail").innerHTML = `
     <p class="eyebrow dark">Lapangan ${escapeHtml(booking.court_id)}</p>
     <h2>${escapeHtml(booking.title)}</h2>
@@ -351,23 +373,26 @@ function onScheduleClick(event) {
         <div class="booking-player-list">
           ${matchedPlayers.map((player) => `
             <div class="booking-player-entry">
-              <button class="booking-player-button" type="button" data-player-address="${escapeHtml(player.id)}" aria-expanded="false" aria-controls="booking-player-address-${escapeHtml(player.id)}">
-                <span class="booking-player-initial">${escapeHtml(initials(player.full_name))}</span>
-                <span>${escapeHtml(player.full_name)}</span>
-                <span aria-hidden="true">⌄</span>
-              </button>
+              <div class="booking-player-row">
+                <button class="booking-player-button" type="button" data-player-address="${escapeHtml(player.id)}" aria-expanded="false" aria-controls="booking-player-address-${escapeHtml(player.id)}">
+                  <span class="booking-player-initial">${escapeHtml(initials(player.full_name))}</span>
+                  <span>${escapeHtml(player.full_name)}</span>
+                  <span aria-hidden="true">⌄</span>
+                </button>
+                ${adminActions ? `<button class="booking-player-edit-button" type="button" data-edit-schedule-player="${escapeHtml(player.id)}">Edit data</button>` : ""}
+              </div>
               <div class="booking-player-address hidden" id="booking-player-address-${escapeHtml(player.id)}">${escapeHtml(playerAddressLabel(player))}</div>
             </div>`).join("")}
         </div>
-      </div>` : `<p class="booking-player-unmatched">Nama booking ini belum terhubung dengan database pemain.</p>`}
+      </div>` : `<p class="booking-player-unmatched">${adminActions ? "Belum ada pemain yang dipilih untuk booking ini." : "Nama booking ini belum terhubung dengan database pemain."}</p>`}
     <div class="booking-detail-grid">
       <div class="booking-detail-item"><span>Waktu</span><strong>${escapeHtml(formatDateTime(booking.start_at))}–${escapeHtml(formatTime(booking.end_at))}</strong></div>
       <div class="booking-detail-item"><span>Jenis</span><strong>${escapeHtml(labels[booking.booking_type] || booking.booking_type)}</strong></div>
       <div class="booking-detail-item"><span>Prioritas</span><strong>${booking.priority ? `Prioritas ${booking.priority}` : "Tidak berlaku"}</strong></div>
       <div class="booking-detail-item"><span>Komposisi</span><strong>${booking.resident_ratio === "gte_50" ? "≥ 50% warga" : booking.resident_ratio === "lt_50" ? "< 50% warga" : "Tidak berlaku"}</strong></div>
     </div>
-    ${booking.notes ? `<p class="detail-notes"><strong>Catatan:</strong> ${escapeHtml(booking.notes)}</p>` : ""}`;
-  el("booking-dialog").showModal();
+    ${booking.notes ? `<p class="detail-notes"><strong>Catatan:</strong> ${escapeHtml(booking.notes)}</p>` : ""}
+    ${adminActions ? `<div class="booking-admin-actions"><button class="button button-outline full" type="button" data-edit-booking-players="${escapeHtml(booking.id)}">Atur pemain booking</button></div>` : ""}`;
 }
 
 function bookingPlayers(booking) {
@@ -401,6 +426,16 @@ function bookingPlayers(booking) {
 }
 
 function onBookingPlayerClick(event) {
+  const editBookingPlayers = event.target.closest("[data-edit-booking-players]");
+  if (editBookingPlayers) {
+    openBookingPlayerEditor(editBookingPlayers.dataset.editBookingPlayers);
+    return;
+  }
+  const editSchedulePlayer = event.target.closest("[data-edit-schedule-player]");
+  if (editSchedulePlayer) {
+    openSchedulePlayerEditor(editSchedulePlayer.dataset.editSchedulePlayer);
+    return;
+  }
   const button = event.target.closest("[data-player-address]");
   if (!button) return;
   const address = el(`booking-player-address-${button.dataset.playerAddress}`);
@@ -409,6 +444,92 @@ function onBookingPlayerClick(event) {
   address.classList.toggle("hidden", !willOpen);
   button.setAttribute("aria-expanded", String(willOpen));
   button.classList.toggle("open", willOpen);
+}
+
+function canManageSchedule() {
+  return Boolean(state.profile?.is_active && ["scheduling_admin", "global_admin"].includes(state.profile.role));
+}
+
+async function loadLinkedBookingPlayers(bookingId) {
+  const links = await api(`booking_players?booking_id=eq.${encodeURIComponent(bookingId)}&select=player_id`, { authenticated: true });
+  const playerIds = new Set(links.map((link) => String(link.player_id)));
+  return state.players.filter((player) => playerIds.has(String(player.id)));
+}
+
+async function openBookingPlayerEditor(bookingId) {
+  if (!canManageSchedule()) return;
+  const booking = state.bookingMap.get(bookingId) || state.adminBookings.find((item) => item.id === bookingId);
+  if (!booking) return toast("Booking tidak ditemukan. Silakan muat ulang jadwal.");
+
+  state.bookingPlayerEditor = { bookingId, selected: new Set() };
+  el("booking-players-title").textContent = booking.title;
+  el("booking-player-search").value = "";
+  setMessage(el("booking-players-message"), "Memuat daftar pemain…");
+  el("booking-player-checklist").innerHTML = `<p class="empty-state">Memuat…</p>`;
+  el("booking-players-dialog").showModal();
+
+  try {
+    const links = await api(`booking_players?booking_id=eq.${encodeURIComponent(bookingId)}&select=player_id`, { authenticated: true });
+    state.bookingPlayerEditor.selected = new Set(links.map((link) => String(link.player_id)));
+    setMessage(el("booking-players-message"), "");
+    renderBookingPlayerChecklist();
+  } catch (error) {
+    setMessage(el("booking-players-message"), error.message, true);
+  }
+}
+
+function renderBookingPlayerChecklist() {
+  const query = el("booking-player-search").value.trim().toLocaleLowerCase("id-ID");
+  const players = state.players.filter((player) => `${player.full_name} ${player.block || ""} ${player.house_number || ""}`.toLocaleLowerCase("id-ID").includes(query));
+  el("booking-player-selection-count").textContent = `${state.bookingPlayerEditor.selected.size} pemain dipilih`;
+  el("booking-player-checklist").innerHTML = players.length ? players.map((player) => `
+    <label class="booking-player-option">
+      <input type="checkbox" name="booking-player" value="${escapeHtml(player.id)}" ${state.bookingPlayerEditor.selected.has(String(player.id)) ? "checked" : ""}>
+      <span><strong>${escapeHtml(player.full_name)}</strong><small>${escapeHtml(playerAddressLabel(player))}</small></span>
+    </label>`).join("") : `<p class="empty-state">Tidak ada pemain yang cocok.</p>`;
+}
+
+function onBookingPlayerSelectionChange(event) {
+  if (!event.target.matches('input[name="booking-player"]')) return;
+  if (event.target.checked) state.bookingPlayerEditor.selected.add(String(event.target.value));
+  else state.bookingPlayerEditor.selected.delete(String(event.target.value));
+  el("booking-player-selection-count").textContent = `${state.bookingPlayerEditor.selected.size} pemain dipilih`;
+}
+
+async function saveBookingPlayers(event) {
+  event.preventDefault();
+  if (!canManageSchedule() || !state.bookingPlayerEditor.bookingId) return;
+  const button = el("save-booking-players");
+  const message = el("booking-players-message");
+  button.disabled = true;
+  setMessage(message, "Menyimpan…");
+  try {
+    await api("rpc/set_booking_players", {
+      method: "POST",
+      body: {
+        target_booking_id: state.bookingPlayerEditor.bookingId,
+        target_player_ids: [...state.bookingPlayerEditor.selected].map(Number),
+      },
+      authenticated: true,
+    });
+    const booking = state.bookingMap.get(state.bookingPlayerEditor.bookingId) || state.adminBookings.find((item) => item.id === state.bookingPlayerEditor.bookingId);
+    const selectedPlayers = state.players.filter((player) => state.bookingPlayerEditor.selected.has(String(player.id)));
+    if (booking) renderBookingDetail(booking, selectedPlayers);
+    el("booking-players-dialog").close();
+    toast("Daftar pemain booking berhasil diperbarui");
+  } catch (error) {
+    setMessage(message, error.message, true);
+  } finally {
+    button.disabled = false;
+  }
+}
+
+async function openSchedulePlayerEditor(playerId) {
+  if (!canManageSchedule()) return;
+  el("booking-dialog").close();
+  selectAdminTab("players");
+  if (!state.adminPlayers.some((player) => String(player.id) === String(playerId))) await loadAdminPlayers();
+  editPlayer(playerId);
 }
 
 async function loadPlayers() {
@@ -557,8 +678,7 @@ function setBookingDateDefault() {
 
 async function loadAdminBookings() {
   if (!state.profile || state.profile.role === "pending") return;
-  const start = new Date();
-  start.setHours(0, 0, 0, 0);
+  const start = new Date(state.adminBookingStart);
   const end = addDays(start, 14);
   const startFilter = encodeURIComponent(`${dateKey(start)}T00:00:00+07:00`);
   const endFilter = encodeURIComponent(`${dateKey(end)}T00:00:00+07:00`);
@@ -574,7 +694,7 @@ async function loadAdminBookings() {
 function renderAdminBookings() {
   const list = el("admin-booking-list");
   if (!state.adminBookings.length) {
-    list.innerHTML = `<p class="empty-state">Belum ada booking untuk 14 hari ke depan.</p>`;
+    list.innerHTML = `<p class="empty-state">Belum ada booking untuk periode ini.</p>`;
     return;
   }
   list.innerHTML = state.adminBookings.map((booking) => `
@@ -588,6 +708,16 @@ function renderAdminBookings() {
         ${booking.status === "confirmed" ? `<button class="mini-button danger" type="button" data-cancel-booking="${escapeHtml(booking.id)}">Batalkan</button>` : ""}
       </div>
     </div>`).join("");
+}
+
+function shiftAdminBookingPeriod(days) {
+  state.adminBookingStart = addDays(state.adminBookingStart, days);
+  loadAdminBookings();
+}
+
+function resetAdminBookingPeriod() {
+  state.adminBookingStart = startOfWeek(new Date());
+  loadAdminBookings();
 }
 
 async function saveBooking(event) {
