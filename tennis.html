@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#102c26">
   <meta name="description" content="Jadwal, daftar pemain, dan aturan penggunaan Lapangan Tennis RW 008 Virgimontela.">
   <title>Tennis RW 008 Virgimontela</title>
-  <link rel="stylesheet" href="/styles.css?v=20260810-2">
+  <link rel="stylesheet" href="/styles.css?v=20260811-1">
   <link rel="manifest" href="/manifest.webmanifest">
 </head>
 <body>
@@ -72,11 +72,11 @@
       <div class="schedule-shell">
         <div class="schedule-loading" id="schedule-loading">Memuat jadwal…</div>
         <div class="schedule-error hidden" id="schedule-error" role="alert"></div>
-        <div class="schedule-scroll hidden" id="schedule-scroll" tabindex="0" aria-label="Jadwal mendatar, geser untuk melihat jam berikutnya">
+        <div class="schedule-scroll hidden" id="schedule-scroll" tabindex="0" aria-label="Jadwal booking mingguan">
           <div class="schedule-canvas" id="schedule-canvas"></div>
         </div>
       </div>
-      <p class="scroll-hint">Geser ke samping untuk melihat seluruh jam. Ketuk booking untuk melihat rinciannya.</p>
+      <p class="scroll-hint"><span class="desktop-schedule-hint">Seluruh jadwal minggu ini ditampilkan dalam satu tampilan. </span><span class="mobile-schedule-hint">Geser ke samping untuk melihat seluruh jam. </span>Ketuk booking untuk melihat rinciannya.</p>
     </section>
 
     <section class="section players-section" id="pemain" aria-labelledby="players-heading">
@@ -342,6 +342,6 @@
   </dialog>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="/app.js?v=20260810-2" defer></script>
+  <script src="/app.js?v=20260811-1" defer></script>
 </body>
 </html>
