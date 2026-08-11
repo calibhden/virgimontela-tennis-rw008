@@ -1,4 +1,3 @@
-/opt/homebrew/Library/Homebrew/cmd/shellenv.sh: line 18: /bin/ps: Operation not permitted
 const SUPABASE_URL = "https://uakhvqjqyplkuxfleggk.supabase.co";
 const SUPABASE_KEY = "sb_publishable_5nSODU833YAt89vnbNaUGA_MtqGYGAR";
 const SESSION_KEY = "virgimontela_admin_session";
