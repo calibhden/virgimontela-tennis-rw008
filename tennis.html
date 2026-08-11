@@ -1,3 +1,4 @@
+/opt/homebrew/Library/Homebrew/cmd/shellenv.sh: line 18: /bin/ps: Operation not permitted
 <!doctype html>
 <html lang="id">
 <head>
@@ -6,7 +7,7 @@
   <meta name="theme-color" content="#102c26">
   <meta name="description" content="Jadwal, daftar pemain, dan aturan penggunaan Lapangan Tennis RW 008 Virgimontela.">
   <title>Tennis RW 008 Virgimontela</title>
-  <link rel="stylesheet" href="/styles.css?v=20260811-2">
+  <link rel="stylesheet" href="/styles.css?v=20260811-3">
   <link rel="manifest" href="/manifest.webmanifest">
 </head>
 <body>
@@ -197,11 +198,16 @@
             <div class="admin-card">
               <div class="card-heading">
                 <div>
-                  <p class="eyebrow dark">14 hari ke depan</p>
+                  <p class="eyebrow dark">Periode 14 hari</p>
                   <h3>Daftar booking</h3>
                   <p class="admin-range" id="admin-booking-range"></p>
                 </div>
                 <button class="text-button" id="refresh-admin-bookings" type="button">Muat ulang</button>
+              </div>
+              <div class="admin-period-controls" aria-label="Pilih periode daftar booking">
+                <button class="mini-button" id="admin-prev-week" type="button" aria-label="Tampilkan minggu sebelumnya">← Sebelumnya</button>
+                <button class="mini-button current" id="admin-current-week" type="button">Minggu ini</button>
+                <button class="mini-button" id="admin-next-week" type="button" aria-label="Tampilkan minggu berikutnya">Berikutnya →</button>
               </div>
               <div class="admin-list" id="admin-booking-list"></div>
             </div>
@@ -327,6 +333,22 @@
     <div class="modal-content" id="booking-detail"></div>
   </dialog>
 
+  <dialog id="booking-players-dialog" class="modal booking-players-editor-modal">
+    <form method="dialog" class="modal-close-form"><button aria-label="Tutup pengaturan pemain">×</button></form>
+    <div class="modal-content">
+      <p class="eyebrow dark">Kelola booking</p>
+      <h2 id="booking-players-title">Atur pemain</h2>
+      <p>Pilih pemain yang ikut dalam booking ini. Perubahan hanya dapat dilakukan oleh admin.</p>
+      <label class="search-box compact">Cari pemain<input id="booking-player-search" type="search" placeholder="Nama, blok, atau nomor rumah"></label>
+      <div class="booking-player-selection-count" id="booking-player-selection-count">0 pemain dipilih</div>
+      <form id="booking-players-form">
+        <div class="booking-player-checklist" id="booking-player-checklist"></div>
+        <p class="form-message" id="booking-players-message" role="status"></p>
+        <button class="button button-primary full" id="save-booking-players" type="submit">Simpan pemain</button>
+      </form>
+    </div>
+  </dialog>
+
   <dialog id="invite-password-dialog" class="modal">
     <div class="modal-content">
       <p class="eyebrow dark">Undangan admin</p>
@@ -342,6 +364,6 @@
   </dialog>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="/app.js?v=20260811-2" defer></script>
+  <script src="/app.js?v=20260811-3" defer></script>
 </body>
 </html>
