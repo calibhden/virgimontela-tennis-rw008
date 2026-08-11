@@ -293,7 +293,7 @@ function renderSchedule() {
     for (const court of ["A", "B"]) {
       const rowBookings = state.bookings.filter((booking) => booking.court_id === court && jakartaDateKey(booking.start_at) === key);
       html += `<div class="schedule-row">
-        <div class="row-label"><div><strong>${days[dayIndex]}</strong><span>${formatDate(date, { year: undefined })}</span></div><b>${court}</b></div>
+        <div class="row-label"><div><strong>${days[dayIndex]}</strong><span>${formatDate(date, { year: undefined })}</span></div><b class="court-badge court-${court.toLowerCase()}" aria-label="Lapangan ${court}">${court}</b></div>
         <div class="timeline-row">`;
       for (const booking of rowBookings) html += bookingBlock(booking);
       html += `</div></div>`;
