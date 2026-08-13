@@ -298,9 +298,10 @@ function renderSchedule() {
   for (let dayIndex = 0; dayIndex < 7; dayIndex += 1) {
     const date = addDays(state.weekStart, dayIndex);
     const key = dateKey(date);
+    const dayClasses = [1, 3, 5].includes(dayIndex) ? " day-shaded" : "";
     for (const court of ["A", "B"]) {
       const rowBookings = state.bookings.filter((booking) => booking.court_id === court && jakartaDateKey(booking.start_at) === key);
-      html += `<div class="schedule-row">
+      html += `<div class="schedule-row${dayClasses}${court === "A" && dayIndex > 0 ? " day-start" : ""}">
         <div class="row-label"><div><strong>${days[dayIndex]}</strong><span>${formatDate(date, { year: undefined })}</span></div><b class="court-badge court-${court.toLowerCase()}" aria-label="Lapangan ${court}">${court}</b></div>
         <div class="timeline-row">`;
       for (const booking of rowBookings) html += bookingBlock(booking);
@@ -369,7 +370,7 @@ function renderBookingDetail(booking, matchedPlayers) {
     <h2>${escapeHtml(booking.title)}</h2>
     ${matchedPlayers.length ? `
       <div class="booking-players">
-        <p class="booking-players-label">Pemain · ketuk nama untuk melihat alamat</p>
+        <p class="booking-players-label">Pemain · ketuk nama untuk melihat alamat dan catatan</p>
         <div class="booking-player-list">
           ${matchedPlayers.map((player) => `
             <div class="booking-player-entry">
@@ -381,7 +382,10 @@ function renderBookingDetail(booking, matchedPlayers) {
                 </button>
                 ${adminActions ? `<button class="booking-player-edit-button" type="button" data-edit-schedule-player="${escapeHtml(player.id)}">Edit data</button>` : ""}
               </div>
-              <div class="booking-player-address hidden" id="booking-player-address-${escapeHtml(player.id)}">${escapeHtml(playerAddressLabel(player))}</div>
+              <div class="booking-player-address hidden" id="booking-player-address-${escapeHtml(player.id)}">
+                <strong>${escapeHtml(playerAddressLabel(player))}</strong>
+                <span class="booking-player-note"><b>Catatan:</b> ${escapeHtml(player.public_notes || "Belum ada catatan pemain.")}</span>
+              </div>
             </div>`).join("")}
         </div>
       </div>` : `<p class="booking-player-unmatched">${adminActions ? "Belum ada pemain yang dipilih untuk booking ini." : "Nama booking ini belum terhubung dengan database pemain."}</p>`}
@@ -534,7 +538,7 @@ async function openSchedulePlayerEditor(playerId) {
 
 async function loadPlayers() {
   try {
-    state.players = await api("players?select=id,full_name,block,house_number&is_active=eq.true&order=full_name.asc");
+    state.players = await api("players?select=id,full_name,block,house_number,public_notes&is_active=eq.true&order=full_name.asc");
     renderPlayers();
   } catch (error) {
     el("player-grid").innerHTML = `<p class="empty-state">Daftar pemain belum dapat dimuat: ${escapeHtml(error.message)}</p>`;
@@ -807,7 +811,7 @@ async function loadAdminPlayers() {
   if (!state.profile || state.profile.role === "pending") return;
   try {
     const [players, privateRows] = await Promise.all([
-      api("players?select=id,full_name,is_active,block,house_number&order=full_name.asc", { authenticated: true }),
+      api("players?select=id,full_name,is_active,block,house_number,public_notes&order=full_name.asc", { authenticated: true }),
       api("player_private?select=player_id,booking_reputation,email,phone,player_status,in_whatsapp,penalty_status,penalty_until,penalty_notes", { authenticated: true }),
     ]);
     const privateMap = new Map(privateRows.map((row) => [row.player_id, row]));
@@ -820,7 +824,7 @@ async function loadAdminPlayers() {
 
 function renderAdminPlayers() {
   const query = el("admin-player-search").value.trim().toLocaleLowerCase("id-ID");
-  const rows = state.adminPlayers.filter((player) => `${player.full_name} ${player.block || ""} ${player.house_number || ""} ${player.player_status || ""} ${player.email || ""} ${player.phone || ""} ${penaltyStatusLabel(player.penalty_status)} ${player.penalty_notes || ""}`.toLocaleLowerCase("id-ID").includes(query));
+  const rows = state.adminPlayers.filter((player) => `${player.full_name} ${player.block || ""} ${player.house_number || ""} ${player.public_notes || ""} ${player.player_status || ""} ${player.email || ""} ${player.phone || ""} ${penaltyStatusLabel(player.penalty_status)} ${player.penalty_notes || ""}`.toLocaleLowerCase("id-ID").includes(query));
   el("admin-player-list").innerHTML = rows.length ? rows.map((player) => {
     const penaltyTone = penaltyStatusTone(player.penalty_status);
     const penaltyUntil = player.penalty_until ? formatDateOnly(player.penalty_until) : "";
@@ -831,6 +835,7 @@ function renderAdminPlayers() {
           <strong>${escapeHtml(player.full_name)}</strong>
           <p>${escapeHtml(playerAddressLabel(player))} · ${escapeHtml(player.email || "Email belum dicatat")}</p>
           <p>${escapeHtml(player.phone || "No. HP belum dicatat")} · ${escapeHtml(player.booking_reputation || "Clear")}</p>
+          ${player.public_notes ? `<p class="player-public-note"><strong>Catatan pemain:</strong> ${escapeHtml(player.public_notes)}</p>` : ""}
           <div class="player-penalty-row">
             <span class="penalty-badge ${penaltyTone}">${escapeHtml(penaltyStatusLabel(player.penalty_status))}</span>
             ${penaltyUntil ? `<span>sampai ${escapeHtml(penaltyUntil)}</span>` : ""}
@@ -877,6 +882,7 @@ function editPlayer(id) {
   el("player-name").value = player.full_name || "";
   el("player-block").value = player.block || "";
   el("player-house-number").value = player.house_number || "";
+  el("player-public-notes").value = player.public_notes || "";
   el("player-status").value = player.player_status || "";
   el("player-email").value = player.email || "";
   el("player-phone").value = player.phone || "";
@@ -913,6 +919,7 @@ async function savePlayer(event) {
       full_name: el("player-name").value.trim(),
       block: el("player-block").value.trim() || null,
       house_number: el("player-house-number").value.trim() || null,
+      public_notes: el("player-public-notes").value.trim() || null,
     };
     let playerId = existingId;
     if (existingId) {
@@ -922,7 +929,7 @@ async function savePlayer(event) {
         authenticated: true,
       });
     } else {
-      const created = await api("players?select=id,full_name,block,house_number", {
+      const created = await api("players?select=id,full_name,block,house_number,public_notes", {
         method: "POST",
         body: playerPayload,
         prefer: "return=representation",
