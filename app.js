@@ -370,19 +370,18 @@ function renderBookingDetail(booking, matchedPlayers) {
     <h2>${escapeHtml(booking.title)}</h2>
     ${matchedPlayers.length ? `
       <div class="booking-players">
-        <p class="booking-players-label">Pemain · ketuk nama untuk melihat alamat dan catatan</p>
+        <p class="booking-players-label">Pemain · alamat dan catatan ditampilkan langsung</p>
         <div class="booking-player-list">
           ${matchedPlayers.map((player) => `
             <div class="booking-player-entry">
               <div class="booking-player-row">
-                <button class="booking-player-button" type="button" data-player-address="${escapeHtml(player.id)}" aria-expanded="false" aria-controls="booking-player-address-${escapeHtml(player.id)}">
+                <div class="booking-player-summary">
                   <span class="booking-player-initial">${escapeHtml(initials(player.full_name))}</span>
                   <span>${escapeHtml(player.full_name)}</span>
-                  <span aria-hidden="true">⌄</span>
-                </button>
+                </div>
                 ${adminActions ? `<button class="booking-player-edit-button" type="button" data-edit-schedule-player="${escapeHtml(player.id)}">Edit data</button>` : ""}
               </div>
-              <div class="booking-player-address hidden" id="booking-player-address-${escapeHtml(player.id)}">
+              <div class="booking-player-address" id="booking-player-address-${escapeHtml(player.id)}">
                 <strong>${escapeHtml(playerAddressLabel(player))}</strong>
                 <span class="booking-player-note"><b>Catatan:</b> ${escapeHtml(player.public_notes || "Belum ada catatan pemain.")}</span>
               </div>
@@ -440,14 +439,6 @@ function onBookingPlayerClick(event) {
     openSchedulePlayerEditor(editSchedulePlayer.dataset.editSchedulePlayer);
     return;
   }
-  const button = event.target.closest("[data-player-address]");
-  if (!button) return;
-  const address = el(`booking-player-address-${button.dataset.playerAddress}`);
-  if (!address) return;
-  const willOpen = address.classList.contains("hidden");
-  address.classList.toggle("hidden", !willOpen);
-  button.setAttribute("aria-expanded", String(willOpen));
-  button.classList.toggle("open", willOpen);
 }
 
 function canManageSchedule() {
