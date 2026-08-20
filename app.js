@@ -42,6 +42,12 @@ function bindEvents() {
     state.weekStart = startOfWeek(new Date());
     loadSchedule();
   });
+  el("schedule-capture-toggle").addEventListener("click", toggleScheduleCaptureMode);
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && document.body.classList.contains("schedule-capture-mode")) {
+      setScheduleCaptureMode(false);
+    }
+  });
   el("player-search").addEventListener("input", renderPlayers);
   el("show-all-players").addEventListener("click", () => {
     state.showAllPlayers = true;
@@ -167,6 +173,23 @@ function initials(name) {
 function shiftWeek(days) {
   state.weekStart = addDays(state.weekStart, days);
   loadSchedule();
+}
+
+function toggleScheduleCaptureMode() {
+  setScheduleCaptureMode(!document.body.classList.contains("schedule-capture-mode"));
+}
+
+function setScheduleCaptureMode(active) {
+  const button = el("schedule-capture-toggle");
+  if (active) el("jadwal").scrollIntoView({ block: "start" });
+  document.body.classList.toggle("schedule-capture-mode", active);
+  button.setAttribute("aria-pressed", String(active));
+  button.innerHTML = active
+    ? '<span aria-hidden="true">✓</span> Tampilan WA aktif'
+    : '<span aria-hidden="true">▣</span> Tampilan WhatsApp';
+  button.title = active
+    ? "Klik atau tekan Escape untuk kembali ke tampilan biasa"
+    : "Perbesar jadwal agar lebih jelas saat di-screenshot untuk WhatsApp";
 }
 
 async function api(path, { method = "GET", body, prefer, authenticated = false, retry = true } = {}) {
