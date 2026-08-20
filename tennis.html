@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#102c26">
   <meta name="description" content="Jadwal, daftar pemain, dan aturan penggunaan Lapangan Tennis RW 008 Virgimontela.">
   <title>Tennis RW 008 Virgimontela</title>
-  <link rel="stylesheet" href="/styles.css?v=20260814-1">
+  <link rel="stylesheet" href="/styles.css?v=20260820-1">
   <link rel="manifest" href="/manifest.webmanifest">
 </head>
 <body>
@@ -50,14 +50,20 @@
     <section class="section schedule-section" id="jadwal" aria-labelledby="schedule-heading">
       <div class="section-heading schedule-heading-row">
         <div>
+          <p class="capture-brand" aria-hidden="true">Virgimontela · Tennis RW 008</p>
           <p class="eyebrow dark">Jadwal terbaru</p>
           <h2 id="schedule-heading">Booking lapangan</h2>
           <p id="week-label">Memuat periode…</p>
         </div>
-        <div class="week-controls" aria-label="Pilih minggu">
-          <button class="icon-button" id="prev-week" type="button" aria-label="Minggu sebelumnya">←</button>
-          <button class="text-button" id="current-week" type="button">Minggu ini</button>
-          <button class="icon-button" id="next-week" type="button" aria-label="Minggu berikutnya">→</button>
+        <div class="schedule-toolbar">
+          <button class="capture-toggle" id="schedule-capture-toggle" type="button" aria-pressed="false" title="Perbesar jadwal agar lebih jelas saat di-screenshot untuk WhatsApp">
+            <span aria-hidden="true">▣</span> Tampilan WhatsApp
+          </button>
+          <div class="week-controls" aria-label="Pilih minggu">
+            <button class="icon-button" id="prev-week" type="button" aria-label="Minggu sebelumnya">←</button>
+            <button class="text-button" id="current-week" type="button">Minggu ini</button>
+            <button class="icon-button" id="next-week" type="button" aria-label="Minggu berikutnya">→</button>
+          </div>
         </div>
       </div>
 
@@ -365,6 +371,6 @@
   </dialog>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="/app.js?v=20260814-1" defer></script>
+  <script src="/app.js?v=20260820-1" defer></script>
 </body>
 </html>
