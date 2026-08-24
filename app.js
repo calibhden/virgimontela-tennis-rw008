@@ -90,7 +90,7 @@ function bindEvents() {
 function startOfWeek(date) {
   const result = new Date(date.getFullYear(), date.getMonth(), date.getDate());
   const day = result.getDay();
-  result.setDate(result.getDate() - (day === 0 ? 6 : day - 1));
+  result.setDate(result.getDate() - day);
   result.setHours(0, 0, 0, 0);
   return result;
 }
@@ -311,7 +311,7 @@ async function loadSchedule() {
 
 function renderSchedule() {
   const canvas = el("schedule-canvas");
-  const days = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"];
+  const days = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
   let html = `<div class="schedule-header"><div class="schedule-corner">Hari · Court</div><div class="time-axis">`;
   for (let hour = 5; hour <= 22; hour += 1) {
     html += `<span class="time-label" data-left="${((hour - 5) / SCHEDULE_HOURS) * 100}">${String(hour).padStart(2, "0")}:00</span>`;
@@ -321,7 +321,7 @@ function renderSchedule() {
   for (let dayIndex = 0; dayIndex < 7; dayIndex += 1) {
     const date = addDays(state.weekStart, dayIndex);
     const key = dateKey(date);
-    const dayClasses = [1, 3, 5].includes(dayIndex) ? " day-shaded" : "";
+    const dayClasses = [2, 4, 6].includes(dayIndex) ? " day-shaded" : "";
     for (const court of ["A", "B"]) {
       const rowBookings = state.bookings.filter((booking) => booking.court_id === court && jakartaDateKey(booking.start_at) === key);
       html += `<div class="schedule-row${dayClasses}${court === "A" && dayIndex > 0 ? " day-start" : ""}">
