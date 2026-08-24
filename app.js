@@ -321,7 +321,7 @@ function renderSchedule() {
   for (let dayIndex = 0; dayIndex < 7; dayIndex += 1) {
     const date = addDays(state.weekStart, dayIndex);
     const key = dateKey(date);
-    const dayClasses = [2, 4, 6].includes(dayIndex) ? " day-shaded" : "";
+    const dayClasses = `${dayIndex === 0 ? " week-start" : ""}${[2, 4, 6].includes(dayIndex) ? " day-shaded" : ""}`;
     for (const court of ["A", "B"]) {
       const rowBookings = state.bookings.filter((booking) => booking.court_id === court && jakartaDateKey(booking.start_at) === key);
       html += `<div class="schedule-row${dayClasses}${court === "A" && dayIndex > 0 ? " day-start" : ""}">
