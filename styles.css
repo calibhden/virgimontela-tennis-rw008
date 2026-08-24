@@ -162,6 +162,8 @@ h3 { margin-bottom: .45rem; }
 .schedule-row { min-height: 57px; border-bottom: 1px solid #e9eeeb; }
 .schedule-row:last-child { border-bottom: 0; }
 .schedule-row.day-start { border-top: 3px solid #dce8e2; }
+.schedule-row.week-start .row-label, .schedule-row.week-start .timeline-row { background-color: #f4f6f5; }
+.schedule-row.week-start .row-label { box-shadow: inset 3px 0 0 #c3ccc8; }
 .schedule-row.day-shaded .row-label, .schedule-row.day-shaded .timeline-row { background-color: #f0f5f2; }
 .schedule-row.day-shaded .row-label { box-shadow: inset 4px 0 0 #b8cec4; }
 .row-label { padding: .55rem .65rem; display: grid; grid-template-columns: 1fr 24px; align-items: center; gap: .3rem; }
