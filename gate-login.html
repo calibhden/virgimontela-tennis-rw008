@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#081b16">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <title>Akses Konsep Gate · Virgimontela</title>
+  <link rel="stylesheet" href="/gate-login.css?v=20260930-1">
+</head>
+<body>
+  <main class="login-shell">
+    <section class="login-panel" aria-labelledby="login-title">
+      <a class="login-brand" href="/" aria-label="Kembali ke halaman utama Virgimontela">
+        <img src="/assets/virgimontela-logo.svg" alt="Virgimontela">
+      </a>
+
+      <div class="login-content">
+        <p class="eyebrow">Dokumen internal warga</p>
+        <h1 id="login-title">Konsep Gate Virgimontela</h1>
+        <p class="lead">Halaman ini memuat rancangan semi-final pembaruan gate dan hanya dapat dibuka menggunakan password yang dibagikan oleh pengurus.</p>
+
+        <p class="alert error" id="login-error" role="alert" hidden>Password belum tepat. Silakan periksa dan coba kembali.</p>
+        <p class="alert success" id="logout-message" role="status" hidden>Anda sudah keluar dari halaman konsep.</p>
+
+        <form action="/api/gate-auth" method="post">
+          <label for="gate-password">Password akses</label>
+          <div class="password-field">
+            <input id="gate-password" name="password" type="password" autocomplete="current-password" required autofocus>
+            <button type="button" id="password-toggle" aria-controls="gate-password" aria-pressed="false">Lihat</button>
+          </div>
+          <button class="login-button" type="submit">Buka konsep gate</button>
+        </form>
+
+        <p class="privacy-note">Akses berlaku selama 12 jam pada perangkat ini. Jangan meneruskan password di luar warga yang dituju.</p>
+        <a class="home-link" href="/">← Kembali ke rumah digital Virgimontela</a>
+      </div>
+    </section>
+    <aside class="login-visual" aria-hidden="true">
+      <span>Wajah baru</span>
+      <strong>Virgimontela</strong>
+      <small>Empat lingkungan · satu identitas</small>
+    </aside>
+  </main>
+  <script src="/gate-login.js?v=20260930-1" defer></script>
+</body>
+</html>
