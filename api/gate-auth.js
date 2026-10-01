@@ -2,11 +2,19 @@ import crypto from "node:crypto";
 
 const COOKIE_NAME = "vmt_gate_access";
 const SESSION_SECONDS = 60 * 60 * 12;
+const TEMP_PASSWORD_DIGEST =
+  "8f91763c51446448fbd166cf219aa97c5190178381e166e2b9880662f4d9e71f";
+const TEMP_SESSION_SECRET =
+  "virgimontela-gate-prototype-2026-8d705d71e86f4a0a";
 
-function createSessionToken(password, sessionSecret) {
+function digestHex(value) {
+  return crypto.createHash("sha256").update(value).digest("hex");
+}
+
+function createSessionToken(passwordDigest, sessionSecret) {
   return crypto
     .createHmac("sha256", sessionSecret)
-    .update(`virgimontela-gate-v1:${password}`)
+    .update(`virgimontela-gate-v1:${passwordDigest}`)
     .digest("hex");
 }
 
@@ -57,21 +65,22 @@ export default async function handler(request, response) {
     return;
   }
 
-  const expectedPassword = process.env.GATE_PASSWORD || "";
-  const sessionSecret = process.env.GATE_SESSION_SECRET || "";
+  const expectedPasswordDigest = process.env.GATE_PASSWORD
+    ? digestHex(process.env.GATE_PASSWORD)
+    : TEMP_PASSWORD_DIGEST;
+  const sessionSecret =
+    process.env.GATE_SESSION_SECRET ||
+    process.env.VERCEL_PROJECT_ID ||
+    TEMP_SESSION_SECRET;
   const submittedPassword = String(form.password || "");
+  const submittedPasswordDigest = digestHex(submittedPassword);
 
-  if (!expectedPassword || !sessionSecret) {
-    response.status(503).json({ error: "Gate access is not configured" });
-    return;
-  }
-
-  if (!safelyMatches(submittedPassword, expectedPassword)) {
+  if (!safelyMatches(submittedPasswordDigest, expectedPasswordDigest)) {
     redirect(response, "/gate-login?error=1");
     return;
   }
 
-  const token = createSessionToken(expectedPassword, sessionSecret);
+  const token = createSessionToken(expectedPasswordDigest, sessionSecret);
   response.setHeader(
     "Set-Cookie",
     `${COOKIE_NAME}=${token}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=${SESSION_SECONDS}`,
