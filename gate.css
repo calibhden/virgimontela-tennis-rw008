@@ -142,7 +142,7 @@ h1, h2, h3 { line-height: 1.04; letter-spacing: -.035em; }
 .honesty-note span { margin-top: .35rem; color: var(--muted); font-size: .86rem; }
 
 .identity-band {
-  margin: 0 max(1rem, calc((100vw - 1180px) / 2));
+  margin: clamp(2rem, 5vw, 4rem) max(1rem, calc((100vw - 1180px) / 2)) 0;
   padding: clamp(2.5rem, 6vw, 5rem);
   display: grid;
   grid-template-columns: 1.15fr .8fr .85fr;
@@ -207,9 +207,15 @@ h1, h2, h3 { line-height: 1.04; letter-spacing: -.035em; }
 .flow-cards h3 { margin: 3.5rem 0 .6rem; font: 500 1.55rem/1 Georgia, serif; }
 .flow-cards p { margin: 0; color: #aebfb7; font-size: .82rem; }
 
+.flow-functions {
+  margin-top: clamp(4rem, 9vw, 7rem);
+  padding-top: clamp(3rem, 6vw, 5rem);
+  border-top: 1px solid rgba(255, 255, 255, .16);
+}
+
 .function-section { background: #ebe9df; }
 .function-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; }
-.function-grid article { min-height: 310px; padding: 1.2rem; display: flex; flex-direction: column; border: 1px solid #d7d3c5; border-radius: 18px; background: #f8f6ef; }
+.function-grid article { min-height: 310px; padding: 1.2rem; display: flex; flex-direction: column; border: 1px solid #d7d3c5; border-radius: 18px; color: var(--ink); background: #f8f6ef; }
 .function-icon { width: 52px; height: 52px; display: grid; place-items: center; border-radius: 50%; color: white; background: var(--forest-700); font: 800 .8rem/1 Inter, sans-serif; }
 .function-grid h3 { margin: auto 0 .7rem; font: 500 1.65rem/1 Georgia, serif; }
 .function-grid p { margin: 0; color: var(--muted); font-size: .84rem; }
