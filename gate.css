@@ -316,7 +316,7 @@ h1, h2, h3 { line-height: 1.04; letter-spacing: -.035em; }
 
 .function-section { background: #ebe9df; }
 .function-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
-.function-grid article { min-height: 230px; padding: 1.4rem; display: flex; flex-direction: column; justify-content: flex-end; border: 1px solid #d7d3c5; border-radius: 18px; color: var(--ink); background: #f8f6ef; }
+.function-grid article { min-height: 190px; padding: 1.4rem; display: flex; flex-direction: column; border: 1px solid #d7d3c5; border-radius: 18px; color: var(--ink); background: #f8f6ef; }
 .function-grid h3 { margin: 0 0 .7rem; font: 500 1.65rem/1 Georgia, serif; }
 .function-grid p { margin: 0; color: var(--muted); font-size: .84rem; }
 
