@@ -20,6 +20,7 @@
       <a href="/gate#pendanaan">Konsep pendanaan</a>
       <a href="#prinsip">Prinsip</a>
       <a href="#tally">Tally</a>
+      <a href="#rab">RAB</a>
     </nav>
     <form action="/api/gate-auth" method="post">
       <input type="hidden" name="action" value="logout">
@@ -31,7 +32,7 @@
     <section class="fundraising-hero" aria-labelledby="fundraising-title">
       <p class="eyebrow">Gate Virgimontela · RW 008</p>
       <h1 id="fundraising-title">Detail fundraising</h1>
-      <p>Halaman ini disiapkan untuk menampilkan penerimaan dan penggunaan dana pembangunan gate secara terbuka. Data tally akan ditambahkan setelah pencatatannya disiapkan dan disetujui untuk dipublikasikan oleh pengurus.</p>
+      <p>Halaman ini menampilkan penerimaan donasi dan rencana anggaran pembangunan gate secara terbuka. Data diperbarui oleh pengurus dan tersimpan pada database fundraising.</p>
     </section>
 
     <section class="fundraising-content" id="prinsip" aria-labelledby="principles-title">
@@ -56,22 +57,50 @@
 
       <div id="tally" aria-labelledby="tally-title">
         <p class="eyebrow dark">Tally fundraising</p>
-        <h2 id="tally-title">Penerimaan dan penggunaan dana</h2>
-        <p>Belum ada data yang dipublikasikan pada halaman ini.</p>
+        <h2 id="tally-title">Penerimaan donasi</h2>
+        <p>Daftar seluruh donasi yang tercatat, beserta total dana yang terkumpul.</p>
+        <p id="fundraising-sample-note" class="sample-note" hidden>Data di bawah ini adalah <strong>contoh format tampilan</strong> dan akan diganti dengan data donasi aktual.</p>
         <div class="fundraising-table-wrap">
           <table class="fundraising-table">
             <thead>
               <tr>
                 <th scope="col">Tanggal</th>
-                <th scope="col">Donatur</th>
-                <th scope="col">Penerimaan</th>
-                <th scope="col">Penggunaan</th>
-                <th scope="col">Saldo</th>
+                <th scope="col">Nama penyetor / Blok</th>
+                <th scope="col" class="amount">Jumlah</th>
+              </tr>
+            </thead>
+            <tbody id="fundraising-rows">
+              <tr>
+                <td class="fundraising-empty" colspan="3">Memuat data…</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <th scope="row" colspan="2">Total terkumpul</th>
+                <td class="amount" id="fundraising-total">…</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+
+      <div id="rab" aria-labelledby="rab-title">
+        <p class="eyebrow dark">Rencana anggaran biaya</p>
+        <h2 id="rab-title">RAB kontraktor</h2>
+        <p>RAB dari kontraktor belum tersedia. Rancangan saat ini masih dalam proses detail design; setelah RAB final diterbitkan, rincian biaya per item pekerjaan akan ditampilkan pada bagian ini.</p>
+        <div class="fundraising-table-wrap">
+          <table class="fundraising-table">
+            <thead>
+              <tr>
+                <th scope="col">Item pekerjaan</th>
+                <th scope="col">Volume</th>
+                <th scope="col" class="amount">Harga satuan</th>
+                <th scope="col" class="amount">Jumlah</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td class="fundraising-empty" colspan="5">Data fundraising belum tersedia</td>
+                <td class="fundraising-empty" colspan="4">RAB belum diterbitkan</td>
               </tr>
             </tbody>
           </table>
@@ -92,5 +121,6 @@
     </div>
     <a href="#atas">Kembali ke atas ↑</a>
   </footer>
+  <script src="/gate-fundraising.js?v=20261012-1" defer></script>
 </body>
 </html>
