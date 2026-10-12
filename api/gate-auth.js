@@ -74,9 +74,15 @@ export default async function handler(request, response) {
     TEMP_SESSION_SECRET;
   const submittedPassword = String(form.password || "");
   const submittedPasswordDigest = digestHex(submittedPassword);
+  const requestedPath = ["/gate", "/gate-fundraising"].includes(form.next)
+    ? form.next
+    : "/gate";
 
   if (!safelyMatches(submittedPasswordDigest, expectedPasswordDigest)) {
-    redirect(response, "/gate-login?error=1");
+    redirect(
+      response,
+      `/gate-login?error=1&next=${encodeURIComponent(requestedPath)}`,
+    );
     return;
   }
 
@@ -85,5 +91,5 @@ export default async function handler(request, response) {
     "Set-Cookie",
     `${COOKIE_NAME}=${token}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=${SESSION_SECONDS}`,
   );
-  redirect(response, "/gate");
+  redirect(response, requestedPath);
 }

@@ -42,7 +42,13 @@ async function createSessionToken(passwordDigest, sessionSecret) {
 }
 
 export const config = {
-  matcher: ["/gate", "/gate.html", "/assets/gate/:path*"],
+  matcher: [
+    "/gate",
+    "/gate.html",
+    "/gate-fundraising",
+    "/gate-fundraising.html",
+    "/assets/gate/:path*",
+  ],
 };
 
 export default async function middleware(request) {
@@ -67,6 +73,9 @@ export default async function middleware(request) {
   }
 
   const loginUrl = new URL("/gate-login", request.url);
-  loginUrl.searchParams.set("next", "/gate");
+  const returnPath = new URL(request.url).pathname.startsWith("/gate-fundraising")
+    ? "/gate-fundraising"
+    : "/gate";
+  loginUrl.searchParams.set("next", returnPath);
   return Response.redirect(loginUrl, 302);
 }

@@ -24,6 +24,7 @@
         <p class="alert success" id="logout-message" role="status" hidden>Anda sudah keluar dari halaman konsep.</p>
 
         <form action="/api/gate-auth" method="post">
+          <input id="gate-next" name="next" type="hidden" value="/gate">
           <label for="gate-password">Password akses</label>
           <div class="password-field">
             <input id="gate-password" name="password" type="password" autocomplete="current-password" required autofocus>
