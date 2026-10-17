@@ -2,8 +2,15 @@ const SUPABASE_URL = "https://uakhvqjqyplkuxfleggk.supabase.co";
 const SUPABASE_KEY = "sb_publishable_5nSODU833YAt89vnbNaUGA_MtqGYGAR";
 const SESSION_KEY = "virgimontela_admin_session";
 const JAKARTA_TZ = "Asia/Jakarta";
-const SCHEDULE_HOURS = 17;
-const SCHEDULE_MINUTES = SCHEDULE_HOURS * 60;
+const SCHEDULE_START_MINUTES = 5 * 60;
+const SCHEDULE_END_MINUTES = 22 * 60;
+const COMPACT_START_MINUTES = 11 * 60;
+const COMPACT_END_MINUTES = 15 * 60;
+const COMPACT_TIME_SCALE = 0.25;
+const SCHEDULE_VISUAL_MINUTES =
+  (COMPACT_START_MINUTES - SCHEDULE_START_MINUTES)
+  + ((COMPACT_END_MINUTES - COMPACT_START_MINUTES) * COMPACT_TIME_SCALE)
+  + (SCHEDULE_END_MINUTES - COMPACT_END_MINUTES);
 
 const state = {
   weekStart: startOfWeek(new Date()),
@@ -151,6 +158,40 @@ function formatDateTime(value) {
     minute: "2-digit",
     hour12: false,
   }).format(new Date(value));
+}
+
+function jakartaTimeMinutes(value) {
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: JAKARTA_TZ,
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).formatToParts(new Date(value));
+  const hour = Number(parts.find((part) => part.type === "hour").value);
+  const minute = Number(parts.find((part) => part.type === "minute").value);
+  return (hour * 60) + minute;
+}
+
+function scheduleVisualOffset(totalMinutes) {
+  const minutes = Math.min(Math.max(totalMinutes, SCHEDULE_START_MINUTES), SCHEDULE_END_MINUTES);
+  if (minutes <= COMPACT_START_MINUTES) return minutes - SCHEDULE_START_MINUTES;
+  if (minutes <= COMPACT_END_MINUTES) {
+    return (COMPACT_START_MINUTES - SCHEDULE_START_MINUTES)
+      + ((minutes - COMPACT_START_MINUTES) * COMPACT_TIME_SCALE);
+  }
+  return (COMPACT_START_MINUTES - SCHEDULE_START_MINUTES)
+    + ((COMPACT_END_MINUTES - COMPACT_START_MINUTES) * COMPACT_TIME_SCALE)
+    + (minutes - COMPACT_END_MINUTES);
+}
+
+function scheduleLeftPercent(totalMinutes) {
+  return (scheduleVisualOffset(totalMinutes) / SCHEDULE_VISUAL_MINUTES) * 100;
+}
+
+function scheduleGridSegments() {
+  return `<span class="time-segment time-segment-morning" aria-hidden="true"></span>
+    <span class="time-segment time-segment-compact" aria-hidden="true"></span>
+    <span class="time-segment time-segment-evening" aria-hidden="true"></span>`;
 }
 
 function dateTimeWithJakartaOffset(date, time) {
@@ -312,9 +353,12 @@ async function loadSchedule() {
 function renderSchedule() {
   const canvas = el("schedule-canvas");
   const days = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
-  let html = `<div class="schedule-header"><div class="schedule-corner">Hari · Court</div><div class="time-axis">`;
+  const gridSegments = scheduleGridSegments();
+  let html = `<div class="schedule-header"><div class="schedule-corner">Hari · Court</div><div class="time-axis">${gridSegments}`;
   for (let hour = 5; hour <= 22; hour += 1) {
-    html += `<span class="time-label" data-left="${((hour - 5) / SCHEDULE_HOURS) * 100}">${String(hour).padStart(2, "0")}:00</span>`;
+    const compactLabel = hour >= 11 && hour <= 15;
+    const fullLabel = `${String(hour).padStart(2, "0")}:00`;
+    html += `<span class="time-label${compactLabel ? " time-label-compact" : ""}" data-left="${scheduleLeftPercent(hour * 60)}" aria-label="${fullLabel}" title="${fullLabel}">${compactLabel ? hour : fullLabel}</span>`;
   }
   html += `</div></div>`;
 
@@ -326,7 +370,7 @@ function renderSchedule() {
       const rowBookings = state.bookings.filter((booking) => booking.court_id === court && jakartaDateKey(booking.start_at) === key);
       html += `<div class="schedule-row${dayClasses}${court === "A" && dayIndex > 0 ? " day-start" : ""}">
         <div class="row-label"><div><strong>${days[dayIndex]}</strong><span>${formatDate(date, { year: undefined })}</span></div><b class="court-badge court-${court.toLowerCase()}" aria-label="Lapangan ${court}">${court}</b></div>
-        <div class="timeline-row">`;
+        <div class="timeline-row">${gridSegments}`;
       for (const booking of rowBookings) html += bookingBlock(booking);
       html += `</div></div>`;
     }
@@ -348,13 +392,11 @@ function applySchedulePositions(canvas) {
 function bookingBlock(booking) {
   const start = new Date(booking.start_at);
   const end = new Date(booking.end_at);
-  const parts = new Intl.DateTimeFormat("en-GB", { timeZone: JAKARTA_TZ, hour: "2-digit", minute: "2-digit", hour12: false }).formatToParts(start);
-  const hour = Number(parts.find((part) => part.type === "hour").value);
-  const minute = Number(parts.find((part) => part.type === "minute").value);
-  const startMinutes = hour * 60 + minute - 5 * 60;
+  const startMinutes = jakartaTimeMinutes(start);
   const durationMinutes = Math.round((end - start) / 60000);
-  const leftPercent = (startMinutes / SCHEDULE_MINUTES) * 100;
-  const widthPercent = (durationMinutes / SCHEDULE_MINUTES) * 100;
+  const endMinutes = startMinutes + durationMinutes;
+  const leftPercent = scheduleLeftPercent(startMinutes);
+  const widthPercent = scheduleLeftPercent(endMinutes) - leftPercent;
   const className = booking.priority ? `priority-${booking.priority}` : booking.booking_type === "basket" ? "basket" : "incidental";
   return `<button class="booking-block ${className}" type="button" data-booking-id="${escapeHtml(booking.id)}" data-left="${leftPercent}" data-width="${widthPercent}" aria-label="${escapeHtml(booking.title)}, ${formatTime(booking.start_at)} sampai ${formatTime(booking.end_at)}">
     <strong>${escapeHtml(booking.title)}</strong><span>${formatTime(booking.start_at)}–${formatTime(booking.end_at)}</span>
