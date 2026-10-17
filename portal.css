@@ -59,11 +59,13 @@ h1, h2, h3 { line-height: 1.05; letter-spacing: -.035em; }
 .service-card.clubhouse { color: white; background: #77543f; border-color: #77543f; }
 .service-card.rules { background: #ede8da; }
 .service-card.building { background: #eff2ed; }
+.service-card.gate { grid-column: 1 / -1; color: var(--forest-950); background: var(--gold); border-color: var(--gold); }
 .service-number { color: currentColor; opacity: .55; font: 700 .72rem/1 monospace; letter-spacing: .12em; }
 .service-icon { margin: 2.8rem 0 auto; width: 58px; height: 58px; display: grid; place-items: center; color: var(--forest-900); background: var(--gold); border-radius: 50%; font: 500 1.45rem/1 Georgia, serif; }
 .service-card.rules .service-icon { color: white; background: var(--forest-700); }
 .service-card.clubhouse .service-icon { color: #533725; background: #efd39a; font: 850 .9rem/1 Inter, ui-sans-serif, sans-serif; letter-spacing: .04em; }
 .service-card.building .service-icon { color: white; background: #75847b; }
+.service-card.gate .service-icon { color: white; background: var(--forest-800); font: 850 1rem/1 Inter, ui-sans-serif, sans-serif; }
 .service-kicker { margin: 1.4rem 0 .4rem; color: currentColor; opacity: .68; font-size: .7rem; font-weight: 850; letter-spacing: .14em; text-transform: uppercase; }
 .service-card h3 { margin-bottom: .7rem; font: 500 clamp(1.8rem, 3vw, 2.45rem)/1.05 Georgia, serif; }
 .service-card > p:not(.service-kicker) { margin-bottom: 1.2rem; color: currentColor; opacity: .72; font-size: .9rem; }
@@ -90,6 +92,7 @@ h1, h2, h3 { line-height: 1.05; letter-spacing: -.035em; }
 
 @media (max-width: 900px) {
   .service-grid { grid-template-columns: 1fr; }
+  .service-card.gate { grid-column: auto; }
   .service-card { min-height: 360px; }
   .portal-section-heading { grid-template-columns: 1fr; gap: 1rem; }
 }
