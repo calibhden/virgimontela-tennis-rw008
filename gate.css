@@ -63,17 +63,18 @@ h1, h2, h3 { line-height: 1.04; letter-spacing: -.035em; }
   font-weight: 800;
 }
 .gate-header nav a:hover, .gate-header nav a:focus-visible { background: rgba(255, 255, 255, .12); outline: none; }
-.gate-header form { margin: 0; }
-.gate-header form button {
+.gate-home-link {
   padding: .48rem .78rem;
   border: 1px solid rgba(255, 255, 255, .28);
   border-radius: 999px;
   color: white;
   background: transparent;
+  text-decoration: none;
+  white-space: nowrap;
   font-size: .72rem;
   font-weight: 800;
-  cursor: pointer;
 }
+.gate-home-link:hover, .gate-home-link:focus-visible { background: rgba(255, 255, 255, .12); outline: none; }
 
 .gate-hero {
   position: relative;
@@ -391,7 +392,7 @@ h1, h2, h3 { line-height: 1.04; letter-spacing: -.035em; }
 
 @media (max-width: 960px) {
   .gate-header nav { display: none; }
-  .gate-header form { margin-left: auto; }
+  .gate-home-link { margin-left: auto; }
   .intro-section,
   .faq-section,
   .growth-section { grid-template-columns: 1fr; }

@@ -1,6 +1,2 @@
 User-agent: *
 Allow: /
-Disallow: /gate
-Disallow: /gate-fundraising
-Disallow: /gate-login
-Disallow: /assets/gate/
