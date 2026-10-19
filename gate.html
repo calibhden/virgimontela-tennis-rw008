@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#071914">
   <meta name="description" content="Rancangan pembaruan Gate Virgimontela RW 008 yang masih dalam tahap penyempurnaan.">
   <title>Wajah Baru Virgimontela · Konsep Gate</title>
-  <link rel="stylesheet" href="/gate.css?v=20261019-1">
+  <link rel="stylesheet" href="/gate.css?v=20261019-2">
 </head>
 <body id="atas">
   <a class="skip-link" href="#isi">Langsung ke isi</a>
@@ -278,12 +278,22 @@
           <span>Fundraising murni swadaya</span>
           <strong>Sukarela</strong>
           <p>Sumbangan warga sepenuhnya sukarela. Donatur dapat memilih namanya ditampilkan atau tercatat anonim. Setelah gate beroperasi, biaya operasional dan perawatan rutin menggunakan dana IPL.</p>
-          <p class="fundraising-summary">
-            <span class="fundraising-summary-label">Terkumpul</span>
-            <strong class="fundraising-summary-total" id="fundraising-summary-total">Memuat…</strong>
-            <span class="sample-badge" id="fundraising-summary-sample" hidden>Data contoh</span>
-          </p>
-          <a class="funding-link" href="/gate-fundraising">Lihat detail fundraising <span aria-hidden="true">→</span></a>
+          <dl class="fundraising-summary">
+            <div>
+              <dt>Terkumpul</dt>
+              <dd id="fundraising-summary-total">Memuat…</dd>
+            </div>
+            <div>
+              <dt>Digunakan</dt>
+              <dd id="fundraising-summary-expenses">Memuat…</dd>
+            </div>
+            <div>
+              <dt>Saldo tercatat</dt>
+              <dd id="fundraising-summary-balance">Memuat…</dd>
+            </div>
+          </dl>
+          <span class="sample-badge" id="fundraising-summary-sample" hidden>Data contoh</span>
+          <a class="funding-link" href="/gate-fundraising">Lihat sumbangan dan pengeluaran <span aria-hidden="true">→</span></a>
         </article>
       </div>
     </section>
@@ -371,6 +381,6 @@
   </dialog>
 
   <script src="/gate.js?v=20261012-1" defer></script>
-  <script src="/gate-fundraising.js?v=20261012-1" defer></script>
+  <script src="/gate-fundraising.js?v=20261019-2" defer></script>
 </body>
 </html>

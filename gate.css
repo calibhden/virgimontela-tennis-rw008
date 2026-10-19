@@ -15,6 +15,7 @@
 }
 
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html { scroll-behavior: smooth; scroll-padding-top: 86px; }
 body {
   margin: 0;
@@ -464,11 +465,31 @@ h1, h2, h3 { line-height: 1.04; letter-spacing: -.035em; }
   background: #fdf6e3; border: 1px solid #f0dfb2; color: #6b4e12;
   font-size: .88rem; max-width: 760px;
 }
-#rab { margin-top: 4rem; }
+#pengeluaran, #rab { margin-top: 4rem; scroll-margin-top: 90px; }
 .fundraising-summary {
-  display: flex; align-items: baseline; flex-wrap: wrap; gap: .6rem;
-  margin: 1.1rem 0 0; padding-top: 1rem; border-top: 1px solid rgba(255, 255, 255, .18);
+  margin: 1.1rem 0 .6rem; padding-top: .8rem; border-top: 1px solid rgba(255, 255, 255, .18);
 }
-.fundraising-summary-label { font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; opacity: .85; }
-.fundraising-summary-total { font-size: 1.35rem; color: var(--gold-soft); }
-.fundraising-summary .sample-badge { background: rgba(253, 240, 213, .16); color: #f5d98b; }
+.fundraising-summary div { padding: .32rem 0; display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
+.fundraising-summary dt { font-size: .7rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; opacity: .72; }
+.fundraising-summary dd { margin: 0; color: var(--gold-soft); font-size: .95rem; font-weight: 850; text-align: right; }
+.funding-cards .fundraising-summary dd { font-family: inherit; line-height: 1.25; letter-spacing: 0; }
+.funding-cards .highlight > .sample-badge { align-self: flex-start; background: rgba(253, 240, 213, .16); color: #f5d98b; }
+.cashflow-overview { margin: 3rem 0 4rem; }
+.cashflow-heading { display: grid; grid-template-columns: 1.15fr .85fr; gap: 2rem; align-items: end; }
+.cashflow-heading h2 { margin: .45rem 0 0; }
+.cashflow-heading > p { margin: 0; color: var(--muted); }
+.cashflow-cards { margin-top: 1.5rem; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+.cashflow-cards article { min-height: 160px; padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid var(--line); border-radius: 18px; background: white; }
+.cashflow-cards article.balance { color: white; border-color: var(--forest-800); background: var(--forest-800); }
+.cashflow-cards span { font-size: .7rem; font-weight: 850; letter-spacing: .08em; text-transform: uppercase; opacity: .72; }
+.cashflow-cards strong { font: 500 clamp(1.45rem, 3vw, 2.3rem)/1.05 Georgia, serif; letter-spacing: -.035em; }
+.cashflow-cards strong.pending { color: var(--muted); font: 800 .9rem/1.35 Arial, sans-serif; letter-spacing: 0; }
+.cashflow-cards article.balance strong.pending { color: #bfd0c7; }
+.expenses-table { min-width: 880px; }
+.expenses-table a { color: var(--forest-800); font-weight: 800; text-underline-offset: 3px; }
+
+@media (max-width: 760px) {
+  .cashflow-heading, .cashflow-cards { grid-template-columns: 1fr; }
+  .cashflow-heading { gap: .7rem; }
+  .cashflow-cards article { min-height: 130px; }
+}

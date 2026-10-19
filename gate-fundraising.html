@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#071914">
-  <meta name="description" content="Detail fundraising pembaruan Gate Virgimontela RW 008">
-  <title>Detail Fundraising · Gate Virgimontela</title>
-  <link rel="stylesheet" href="/gate.css?v=20261019-1">
+  <meta name="description" content="Transparansi sumbangan, pengeluaran, dan saldo dana pembangunan Gate Virgimontela RW 008">
+  <title>Transparansi Dana · Gate Virgimontela</title>
+  <link rel="stylesheet" href="/gate.css?v=20261019-2">
 </head>
 <body id="atas">
   <a class="skip-link" href="#isi">Langsung ke isi</a>
@@ -18,7 +18,8 @@
     <nav aria-label="Navigasi halaman fundraising">
       <a href="/gate#pendanaan">Konsep pendanaan</a>
       <a href="#prinsip">Prinsip</a>
-      <a href="#tally">Tally</a>
+      <a href="#tally">Sumbangan</a>
+      <a href="#pengeluaran">Pengeluaran</a>
       <a href="#rab">RAB</a>
     </nav>
     <a class="gate-home-link" href="/">Portal warga</a>
@@ -27,8 +28,8 @@
   <main class="fundraising-page" id="isi">
     <section class="fundraising-hero" aria-labelledby="fundraising-title">
       <p class="eyebrow">Gate Virgimontela · RW 008</p>
-      <h1 id="fundraising-title">Detail fundraising</h1>
-      <p>Halaman ini menampilkan penerimaan donasi dan rencana anggaran pembangunan gate secara terbuka. Data diperbarui oleh pengurus dan tersimpan pada database fundraising.</p>
+      <h1 id="fundraising-title">Transparansi dana gate</h1>
+      <p>Halaman ini menampilkan sumbangan yang diterima, pengeluaran yang telah digunakan, dan saldo dana pembangunan Gate Virgimontela secara terbuka.</p>
     </section>
 
     <section class="fundraising-content" id="prinsip" aria-labelledby="principles-title">
@@ -50,6 +51,31 @@
           <p>Penerimaan dan penggunaan dana akan dirangkum pada halaman ini.</p>
         </article>
       </div>
+
+      <section class="cashflow-overview" aria-labelledby="cashflow-title">
+        <div class="cashflow-heading">
+          <div>
+            <p class="eyebrow dark">Ringkasan dana</p>
+            <h2 id="cashflow-title">Posisi dana terkini</h2>
+          </div>
+          <p>Saldo tercatat dihitung dari total sumbangan dikurangi total pengeluaran yang telah dipublikasikan.</p>
+        </div>
+        <div class="cashflow-cards">
+          <article>
+            <span>Total sumbangan</span>
+            <strong id="cashflow-donations-total">Memuat…</strong>
+          </article>
+          <article>
+            <span>Total pengeluaran</span>
+            <strong id="cashflow-expenses-total">Memuat…</strong>
+          </article>
+          <article class="balance">
+            <span>Saldo tercatat</span>
+            <strong id="cashflow-balance-total">Memuat…</strong>
+          </article>
+        </div>
+        <p id="cashflow-status-note" class="sample-note" hidden>Rincian pengeluaran belum dipublikasikan oleh pengurus. Saldo belum dapat dihitung sampai data penggunaan dana tersedia.</p>
+      </section>
 
       <div id="tally" aria-labelledby="tally-title">
         <p class="eyebrow dark">Tally fundraising</p>
@@ -74,6 +100,38 @@
               <tr>
                 <th scope="row" colspan="2">Total terkumpul</th>
                 <td class="amount" id="fundraising-total">…</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+
+      <div id="pengeluaran" aria-labelledby="expenses-title">
+        <p class="eyebrow dark">Penggunaan dana</p>
+        <h2 id="expenses-title">Daftar pengeluaran</h2>
+        <p>Setiap pembayaran proyek dicatat berdasarkan tanggal, keperluan, penerima pembayaran, jumlah, dan dokumen pendukung apabila tersedia.</p>
+        <p id="expenses-sample-note" class="sample-note" hidden>Data di bawah ini adalah <strong>contoh format tampilan</strong> dan akan diganti dengan data pengeluaran aktual.</p>
+        <div class="fundraising-table-wrap">
+          <table class="fundraising-table expenses-table">
+            <thead>
+              <tr>
+                <th scope="col">Tanggal</th>
+                <th scope="col">Keperluan</th>
+                <th scope="col">Penerima / Vendor</th>
+                <th scope="col" class="amount">Jumlah</th>
+                <th scope="col">Bukti / Keterangan</th>
+              </tr>
+            </thead>
+            <tbody id="expense-rows">
+              <tr>
+                <td class="fundraising-empty" colspan="5">Memuat data…</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <th scope="row" colspan="3">Total pengeluaran</th>
+                <td class="amount" id="expenses-total">…</td>
+                <td></td>
               </tr>
             </tfoot>
           </table>
@@ -117,6 +175,6 @@
     </div>
     <a href="#atas">Kembali ke atas ↑</a>
   </footer>
-  <script src="/gate-fundraising.js?v=20261012-1" defer></script>
+  <script src="/gate-fundraising.js?v=20261019-2" defer></script>
 </body>
 </html>
