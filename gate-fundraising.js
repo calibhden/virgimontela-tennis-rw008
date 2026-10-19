@@ -52,17 +52,30 @@
     );
   }
 
+  async function fetchPublishedExpenses() {
+    var res = await fetch("/gate-fundraising-expenses.json?v=20261019-1");
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    var data = await res.json();
+    return Array.isArray(data) ? data : (data.rows || []);
+  }
+
   async function fetchExpenses() {
+    var databaseRows = null;
     try {
-      var rows = await fetchJson(
+      databaseRows = await fetchJson(
         "/rest/v1/gate_fundraising_expenses" +
         "?select=tanggal,uraian,penerima,jumlah,keterangan,bukti_url,is_sample&order=tanggal,id"
       );
-      return { available: true, rows: rows };
     } catch (error) {
-      if (error.status === 404) return { available: false, rows: [] };
-      throw error;
+      databaseRows = null;
     }
+
+    if (databaseRows && databaseRows.length > 0) {
+      return { available: true, rows: databaseRows };
+    }
+
+    var publishedRows = await fetchPublishedExpenses();
+    return { available: true, rows: publishedRows };
   }
 
   function isAllSample(rows) {
