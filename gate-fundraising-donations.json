@@ -1,0 +1,53 @@
+{
+  "updated_at": "2026-10-21",
+  "rows": [
+    {
+      "tanggal": "2026-10-02",
+      "donatur": "Anonim",
+      "jumlah": 80000000,
+      "is_sample": false
+    },
+    {
+      "tanggal": "2026-10-04",
+      "donatur": "Anonim",
+      "jumlah": 50000000,
+      "is_sample": false
+    },
+    {
+      "tanggal": "2026-10-05",
+      "donatur": "Anonim",
+      "jumlah": 20000000,
+      "is_sample": false
+    },
+    {
+      "tanggal": "2026-10-07",
+      "donatur": "Anonim",
+      "jumlah": 50000000,
+      "is_sample": false
+    },
+    {
+      "tanggal": "2026-10-20",
+      "donatur": "Blok A2",
+      "jumlah": 2000000,
+      "is_sample": false
+    },
+    {
+      "tanggal": "2026-10-21",
+      "donatur": "Blok C2",
+      "jumlah": 5000000,
+      "is_sample": false
+    },
+    {
+      "tanggal": "2026-10-21",
+      "donatur": "Blok C2",
+      "jumlah": 5000000,
+      "is_sample": false
+    },
+    {
+      "tanggal": "2026-10-21",
+      "donatur": "Blok J",
+      "jumlah": 10000000,
+      "is_sample": false
+    }
+  ]
+}

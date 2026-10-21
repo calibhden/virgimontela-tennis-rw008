@@ -1,5 +1,5 @@
-/* Transparansi dana Gate Virgimontela — data dibaca dari Supabase.
- * Penerimaan: public.gate_fundraising_donations
+/* Transparansi dana Gate Virgimontela — data dibaca dari catatan publik dengan fallback Supabase.
+ * Penerimaan: gate-fundraising-donations.json; fallback public.gate_fundraising_donations
  * Pengeluaran: public.gate_fundraising_expenses
  */
 (function () {
@@ -45,7 +45,21 @@
     return res.json();
   }
 
-  function fetchDonations() {
+  async function fetchPublishedDonations() {
+    var res = await fetch("/gate-fundraising-donations.json?v=20261021-1");
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    var data = await res.json();
+    return Array.isArray(data) ? data : (data.rows || []);
+  }
+
+  async function fetchDonations() {
+    try {
+      var publishedRows = await fetchPublishedDonations();
+      if (publishedRows.length > 0) return publishedRows;
+    } catch (error) {
+      // Gunakan database lama jika catatan publik belum dapat dimuat.
+    }
+
     return fetchJson(
       "/rest/v1/gate_fundraising_donations" +
       "?select=tanggal,donatur,jumlah,is_sample&order=tanggal,id"
