@@ -4,48 +4,56 @@
     {
       "tanggal": "2026-10-02",
       "donatur": "Anonim",
+      "rekening_penampungan": "Rek RT 02",
       "jumlah": 80000000,
       "is_sample": false
     },
     {
       "tanggal": "2026-10-04",
       "donatur": "Anonim",
+      "rekening_penampungan": "Rek RT 02",
       "jumlah": 50000000,
       "is_sample": false
     },
     {
       "tanggal": "2026-10-05",
       "donatur": "Anonim",
+      "rekening_penampungan": "Rek RT 02",
       "jumlah": 20000000,
       "is_sample": false
     },
     {
       "tanggal": "2026-10-07",
       "donatur": "Anonim",
+      "rekening_penampungan": "Rek RT 02",
       "jumlah": 50000000,
       "is_sample": false
     },
     {
       "tanggal": "2026-10-20",
       "donatur": "Blok A2",
+      "rekening_penampungan": "Rek RT 02",
       "jumlah": 2000000,
       "is_sample": false
     },
     {
       "tanggal": "2026-10-20",
       "donatur": "Blok C2",
+      "rekening_penampungan": "Rek RT 02",
       "jumlah": 5000000,
       "is_sample": false
     },
     {
       "tanggal": "2026-10-21",
       "donatur": "Blok C2",
+      "rekening_penampungan": "Rek RT 02",
       "jumlah": 5000000,
       "is_sample": false
     },
     {
       "tanggal": "2026-10-21",
       "donatur": "Blok J",
+      "rekening_penampungan": "Rek RT 02",
       "jumlah": 10000000,
       "is_sample": false
     }

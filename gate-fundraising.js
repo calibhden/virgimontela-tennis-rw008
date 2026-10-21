@@ -46,7 +46,7 @@
   }
 
   async function fetchPublishedDonations() {
-    var res = await fetch("/gate-fundraising-donations.json?v=20261021-2");
+    var res = await fetch("/gate-fundraising-donations.json?v=20261021-3");
     if (!res.ok) throw new Error("HTTP " + res.status);
     var data = await res.json();
     return Array.isArray(data) ? data : (data.rows || []);
@@ -62,7 +62,7 @@
 
     return fetchJson(
       "/rest/v1/gate_fundraising_donations" +
-      "?select=tanggal,donatur,jumlah,is_sample&order=tanggal,id"
+      "?select=tanggal,donatur,rekening_penampungan,jumlah,is_sample&order=tanggal,id"
     );
   }
 
@@ -115,18 +115,19 @@
     if (!tbody || !totalCell) return;
 
     if (failed) {
-      tbody.innerHTML = '<tr><td class="fundraising-empty" colspan="3">Data sumbangan tidak dapat dimuat saat ini. Silakan coba lagi nanti.</td></tr>';
+      tbody.innerHTML = '<tr><td class="fundraising-empty" colspan="4">Data sumbangan tidak dapat dimuat saat ini. Silakan coba lagi nanti.</td></tr>';
       totalCell.textContent = "—";
       return;
     }
 
     if (rows.length === 0) {
-      tbody.innerHTML = '<tr><td class="fundraising-empty" colspan="3">Belum ada data sumbangan yang dipublikasikan.</td></tr>';
+      tbody.innerHTML = '<tr><td class="fundraising-empty" colspan="4">Belum ada data sumbangan yang dipublikasikan.</td></tr>';
     } else {
       tbody.innerHTML = rows.map(function (row) {
         return (
           "<tr><td>" + escapeHtml(formatTanggal(row.tanggal)) + "</td>" +
           "<td>" + optionalText(row.donatur) + "</td>" +
+          "<td>" + optionalText(row.rekening_penampungan) + "</td>" +
           '<td class="amount">' + escapeHtml(formatRupiah(row.jumlah)) + "</td></tr>"
         );
       }).join("");

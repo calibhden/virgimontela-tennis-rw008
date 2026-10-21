@@ -338,6 +338,7 @@ h1, h2, h3 { line-height: 1.04; letter-spacing: -.035em; }
 .fundraising-principles p { margin: 0; color: var(--muted); font-size: .86rem; }
 .fundraising-table-wrap { margin-top: 2rem; overflow-x: auto; border: 1px solid var(--line); border-radius: 18px; background: white; }
 .fundraising-table { width: 100%; min-width: 680px; border-collapse: collapse; }
+.donations-table { min-width: 780px; }
 .fundraising-table th, .fundraising-table td { padding: 1rem; border-bottom: 1px solid var(--line); text-align: left; font-size: .82rem; }
 .fundraising-table th { color: var(--forest-800); background: #eef1e9; font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; }
 .fundraising-table tr:last-child td { border-bottom: 0; }
