@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#071914">
+  <meta name="description" content="Data maintenance Virgimontela RW 008: daftar aset yang dirawat — mulai dari AC — beserta riwayat servis dan perbaikannya.">
+  <title>Maintenance · Virgimontela RW 008</title>
+  <link rel="stylesheet" href="/maintenance.css?v=20261024-1">
+  <link rel="manifest" href="/manifest.webmanifest">
+</head>
+<body id="atas">
+  <a class="skip-link" href="#isi">Langsung ke data maintenance</a>
+
+  <header class="maint-header">
+    <a class="maint-brand" href="/" aria-label="Virgimontela, kembali ke portal utama">
+      <img src="/assets/virgimontela-logo.svg" alt="Virgimontela">
+    </a>
+    <nav aria-label="Navigasi Maintenance">
+      <a class="home-link" href="/">← Portal utama</a>
+      <a href="#aset">Daftar aset</a>
+      <a href="#riwayat">Riwayat servis</a>
+    </nav>
+  </header>
+
+  <main id="isi">
+    <section class="maint-hero" aria-labelledby="maint-title">
+      <div class="hero-inner">
+        <p class="eyebrow">Fasilitas bersama · RW 008</p>
+        <h1 id="maint-title">Maintenance</h1>
+        <p class="hero-lead">Catatan aset yang dirawat pengurus — spesifikasi detail tiap unit beserta riwayat servis dan perbaikannya.</p>
+        <dl class="hero-stats" aria-label="Ringkasan maintenance">
+          <div><dt>Total unit</dt><dd id="stat-units">…</dd></div>
+          <div><dt>Unit aktif</dt><dd id="stat-active">…</dd></div>
+          <div><dt>Servis tercatat</dt><dd id="stat-logs">…</dd></div>
+          <div><dt>Servis berikutnya</dt><dd id="stat-next">…</dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <section class="maint-section" id="aset" aria-labelledby="aset-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow dark">Daftar aset</p>
+          <h2 id="aset-title">Aset yang dirawat</h2>
+        </div>
+        <p>Buka tiap kartu untuk melihat spesifikasi lengkap unit dan riwayat servisnya.</p>
+      </div>
+      <div id="asset-groups" aria-live="polite">
+        <p class="loading">Memuat data aset…</p>
+      </div>
+    </section>
+
+    <section class="maint-section" id="riwayat" aria-labelledby="riwayat-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow dark">Log perawatan</p>
+          <h2 id="riwayat-title">Riwayat servis &amp; perbaikan</h2>
+        </div>
+        <p>Seluruh catatan servis dan perbaikan semua aset, dari yang terbaru.</p>
+      </div>
+      <div class="table-wrap">
+        <table class="log-table">
+          <thead>
+            <tr>
+              <th scope="col">Tanggal</th>
+              <th scope="col">Aset</th>
+              <th scope="col">Jenis</th>
+              <th scope="col">Deskripsi</th>
+              <th scope="col">Teknisi / Vendor</th>
+              <th scope="col" class="num">Biaya</th>
+              <th scope="col">Berikutnya</th>
+            </tr>
+          </thead>
+          <tbody id="log-rows">
+            <tr><td colspan="7" class="loading">Memuat riwayat…</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="data-note">Data dikelola pengurus dan diperbarui setiap ada servis atau perbaikan.</p>
+    </section>
+  </main>
+
+  <footer class="maint-footer">
+    <div><strong>Virgimontela RW 008</strong><span>Virginia Lagoon · Taman Telaga Golf · Vermont Parkland · Bukit Golf 7.3</span></div>
+    <a href="#atas">Kembali ke atas ↑</a>
+  </footer>
+
+  <script src="/maintenance.js?v=20261024-1" defer></script>
+</body>
+</html>
