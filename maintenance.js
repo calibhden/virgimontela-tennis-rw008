@@ -129,6 +129,13 @@
         "</tr>";
     }).join("");
 
+    var photo = "";
+    if (asset.photo_url && String(asset.photo_url).trim() !== "") {
+      photo = "<figure class=\"asset-photo\"><img src=\"" + escapeHtml(asset.photo_url) +
+        "\" alt=\"Foto " + escapeHtml(asset.name || asset.asset_code || "aset") +
+        "\" loading=\"lazy\"></figure>";
+    }
+
     var logTable = assetLogs.length
       ? "<div class=\"table-wrap\"><table class=\"log-table\">" +
         "<thead><tr><th scope=\"col\">Tanggal</th><th scope=\"col\">Jenis</th><th scope=\"col\">Deskripsi</th>" +
@@ -145,6 +152,7 @@
         "<span class=\"asset-toggle\" aria-hidden=\"true\">▾</span>" +
       "</summary>" +
       "<div class=\"asset-body\">" +
+        photo +
         "<dl class=\"spec-grid\">" + specs + "</dl>" +
         "<h4 class=\"asset-log-title\">Riwayat servis &amp; perbaikan</h4>" +
         logTable +
@@ -221,7 +229,7 @@
     try {
       var assets = await fetchRows(
         "maintenance_assets",
-        "id,asset_code,category,name,location,brand,model,unit_type,capacity_pk,capacity_btu,refrigerant,indoor_serial,outdoor_serial,installed_on,warranty_until,status,notes",
+        "id,asset_code,category,name,location,brand,model,unit_type,capacity_pk,capacity_btu,refrigerant,indoor_serial,outdoor_serial,installed_on,warranty_until,status,notes,photo_url",
         "asset_code"
       );
       var logs = await fetchRows(
