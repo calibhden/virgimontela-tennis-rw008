@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-23",
+  "updated_at": "2026-10-25",
   "rows": [
     {
       "tanggal": "2026-10-02",
@@ -69,6 +69,27 @@
       "donatur": "C7/18 Bundasari",
       "rekening_penampungan": "Rek RT 02",
       "jumlah": 1500000,
+      "is_sample": false
+    },
+    {
+      "tanggal": "2026-10-24",
+      "donatur": "Anonim",
+      "rekening_penampungan": "Rek RT 02",
+      "jumlah": 30000000,
+      "is_sample": false
+    },
+    {
+      "tanggal": "2026-10-25",
+      "donatur": "Bukit Golf K3",
+      "rekening_penampungan": "Rek RT 02",
+      "jumlah": 50000000,
+      "is_sample": false
+    },
+    {
+      "tanggal": "2026-10-25",
+      "donatur": "B7/7",
+      "rekening_penampungan": "Rek RT 02",
+      "jumlah": 1000000,
       "is_sample": false
     }
   ]
