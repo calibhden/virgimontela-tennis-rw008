@@ -112,6 +112,13 @@
       "rekening_penampungan": "Rek RT 02",
       "jumlah": 2000000,
       "is_sample": false
+    },
+    {
+      "tanggal": "2026-10-26",
+      "donatur": "E2/16",
+      "rekening_penampungan": "Rek RT 02",
+      "jumlah": 2000000,
+      "is_sample": false
     }
   ]
 }
