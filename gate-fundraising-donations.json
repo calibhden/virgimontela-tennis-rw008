@@ -147,6 +147,13 @@
       "rekening_penampungan": "Rek RT 02",
       "jumlah": 500000,
       "is_sample": false
+    },
+    {
+      "tanggal": "2026-10-26",
+      "donatur": "B2/12 Pak Alpian",
+      "rekening_penampungan": "Rek RT 02",
+      "jumlah": 10000000,
+      "is_sample": false
     }
   ]
 }
