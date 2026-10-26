@@ -126,6 +126,13 @@
       "rekening_penampungan": "Rek RT 02",
       "jumlah": 5000000,
       "is_sample": false
+    },
+    {
+      "tanggal": "2026-10-26",
+      "donatur": "B5/8 Pak Joseph S",
+      "rekening_penampungan": "Rek RT 02",
+      "jumlah": 5000000,
+      "is_sample": false
     }
   ]
 }
