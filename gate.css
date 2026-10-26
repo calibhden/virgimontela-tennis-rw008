@@ -493,4 +493,61 @@ h1, h2, h3 { line-height: 1.04; letter-spacing: -.035em; }
   .cashflow-heading, .cashflow-cards { grid-template-columns: 1fr; }
   .cashflow-heading { gap: .7rem; }
   .cashflow-cards article { min-height: 130px; }
+
+  /* Di layar ponsel, setiap catatan dibuat menjadi kartu agar tidak perlu geser ke samping. */
+  .fundraising-table-wrap { overflow: visible; border: 0; background: transparent; }
+  .fundraising-table, .donations-table, .expenses-table { min-width: 0; display: block; }
+  .fundraising-table thead { display: none; }
+  .fundraising-table tbody, .fundraising-table tfoot { display: block; }
+  .fundraising-table tbody tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: .45rem 1rem;
+    margin-bottom: .75rem;
+    padding: 1rem;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: white;
+  }
+  .fundraising-table tbody td {
+    padding: 0;
+    border: 0;
+    font-size: .86rem;
+  }
+  .fundraising-table tbody td::before {
+    display: block;
+    margin-bottom: .12rem;
+    color: var(--muted);
+    font-size: .62rem;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+  .donations-table tbody td:nth-child(1)::before { content: "Tanggal"; }
+  .donations-table tbody td:nth-child(2)::before { content: "Penyetor / blok"; }
+  .donations-table tbody td:nth-child(3)::before { content: "Rekening"; }
+  .donations-table tbody td:nth-child(4)::before { content: "Jumlah"; }
+  .donations-table tbody td:nth-child(2) { grid-column: 1; font-weight: 800; color: var(--forest-800); }
+  .donations-table tbody td:nth-child(4) { grid-column: 2; grid-row: 1 / span 2; align-self: center; font-weight: 850; }
+  .donations-table tbody td:nth-child(1), .donations-table tbody td:nth-child(3) { color: var(--muted); }
+  .expenses-table tbody td:nth-child(1)::before { content: "Tanggal"; }
+  .expenses-table tbody td:nth-child(2)::before { content: "Keperluan"; }
+  .expenses-table tbody td:nth-child(3)::before { content: "Penerima / vendor"; }
+  .expenses-table tbody td:nth-child(4)::before { content: "Jumlah"; }
+  .expenses-table tbody td:nth-child(5)::before { content: "Bukti / keterangan"; }
+  .expenses-table tbody td:nth-child(2), .expenses-table tbody td:nth-child(3), .expenses-table tbody td:nth-child(5) { grid-column: 1 / -1; }
+  .expenses-table tbody td:nth-child(4) { grid-column: 2; grid-row: 1 / span 2; align-self: center; font-weight: 850; }
+  .fundraising-table tbody td.fundraising-empty { grid-column: 1 / -1; padding: 1rem !important; }
+  .fundraising-table tbody td.fundraising-empty::before { display: none; }
+  .fundraising-table tfoot tr {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: 14px;
+    background: #eef1e9;
+  }
+  .fundraising-table tfoot th, .fundraising-table tfoot td { padding: 0; background: transparent; }
+  .fundraising-table tfoot td.amount { font-size: 1rem; }
 }
