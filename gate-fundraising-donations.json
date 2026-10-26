@@ -133,6 +133,13 @@
       "rekening_penampungan": "Rek RT 02",
       "jumlah": 5000000,
       "is_sample": false
+    },
+    {
+      "tanggal": "2026-10-26",
+      "donatur": "Anonim",
+      "rekening_penampungan": "Rek RT 02",
+      "jumlah": 10000000,
+      "is_sample": false
     }
   ]
 }
