@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-25",
+  "updated_at": "2026-10-26",
   "rows": [
     {
       "tanggal": "2026-10-02",
@@ -97,6 +97,20 @@
       "donatur": "E1/11b",
       "rekening_penampungan": "Rek RT 02",
       "jumlah": 1000000,
+      "is_sample": false
+    },
+    {
+      "tanggal": "2026-10-26",
+      "donatur": "C3/6",
+      "rekening_penampungan": "Rek RT 02",
+      "jumlah": 2500000,
+      "is_sample": false
+    },
+    {
+      "tanggal": "2026-10-26",
+      "donatur": "C3/8",
+      "rekening_penampungan": "Rek RT 02",
+      "jumlah": 2000000,
       "is_sample": false
     }
   ]
