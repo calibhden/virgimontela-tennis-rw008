@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-28",
+  "updated_at": "2026-10-29",
   "rows": [
     {
       "tanggal": "2026-10-02",
@@ -146,6 +146,20 @@
       "donatur": "Pak Franz A2/3A",
       "rekening_penampungan": "Rek RT 02",
       "jumlah": 3000000,
+      "is_sample": false
+    },
+    {
+      "tanggal": "2026-10-28",
+      "donatur": "A2/2",
+      "rekening_penampungan": "Rek RT 02",
+      "jumlah": 10000000,
+      "is_sample": false
+    },
+    {
+      "tanggal": "2026-10-29",
+      "donatur": "Blok D2",
+      "rekening_penampungan": "Rek RT 02",
+      "jumlah": 5000000,
       "is_sample": false
     }
   ]
