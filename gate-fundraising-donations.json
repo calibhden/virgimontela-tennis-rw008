@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-29",
+  "updated_at": "2026-10-30",
   "rows": [
     {
       "tanggal": "2026-10-02",
@@ -157,7 +157,7 @@
     },
     {
       "tanggal": "2026-10-29",
-      "donatur": "Blok D2",
+      "donatur": "Blok D1/12",
       "rekening_penampungan": "Rek RT 02",
       "jumlah": 5000000,
       "is_sample": false
