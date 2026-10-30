@@ -488,11 +488,26 @@ h1, h2, h3 { line-height: 1.04; letter-spacing: -.035em; }
 .cashflow-cards article.balance strong.pending { color: #bfd0c7; }
 .expenses-table { min-width: 880px; }
 .expenses-table a { color: var(--forest-800); font-weight: 800; text-underline-offset: 3px; }
+.contractor-progress { margin-top: 3.5rem; padding-top: 3.5rem; border-top: 1px solid var(--line); }
+.contractor-progress-heading { display: grid; grid-template-columns: minmax(0, 1fr) minmax(240px, .7fr); gap: 2rem; align-items: end; }
+.contractor-progress-heading h2 { margin: 0; }
+.contractor-progress-heading > p { margin: 0; color: var(--muted); }
+.contractor-updated { margin: 1.1rem 0 1rem; color: var(--muted); font-size: .78rem; }
+.contractor-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+.contractor-list article { display: flex; flex-direction: column; gap: 1.15rem; padding: 1.3rem; border: 1px solid var(--line); border-radius: 18px; background: white; }
+.contractor-name { display: flex; flex-wrap: wrap; align-items: baseline; gap: .45rem; }
+.contractor-name h3 { margin: 0; color: var(--forest-800); font-family: var(--serif); font-size: 1.35rem; }
+.contractor-name span { color: var(--muted); font-size: .78rem; }
+.contractor-list dl { display: grid; gap: .85rem; margin: 0; }
+.contractor-list dt { margin-bottom: .16rem; color: var(--muted); font-size: .63rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.contractor-list dd { margin: 0; color: var(--ink); font-size: .86rem; line-height: 1.5; }
 
 @media (max-width: 760px) {
   .cashflow-heading, .cashflow-cards { grid-template-columns: 1fr; }
   .cashflow-heading { gap: .7rem; }
   .cashflow-cards article { min-height: 130px; }
+  .contractor-progress-heading, .contractor-list { grid-template-columns: 1fr; }
+  .contractor-progress-heading { gap: .7rem; }
 
   /* Di layar ponsel, setiap catatan dibuat menjadi kartu agar tidak perlu geser ke samping. */
   .fundraising-table-wrap { overflow: visible; border: 0; background: transparent; }
