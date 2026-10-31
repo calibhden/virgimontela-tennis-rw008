@@ -168,6 +168,13 @@
       "rekening_penampungan": "Rek RT 02",
       "jumlah": 6500000,
       "is_sample": false
+    },
+    {
+      "tanggal": "2026-10-31",
+      "donatur": "Pak Iswan C6/1-2",
+      "rekening_penampungan": "Rek RT 02",
+      "jumlah": 20000000,
+      "is_sample": false
     }
   ]
 }
