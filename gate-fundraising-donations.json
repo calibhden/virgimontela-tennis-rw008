@@ -86,6 +86,27 @@
       "is_sample": false
     },
     {
+      "tanggal": "2026-10-25",
+      "donatur": "Trisno Lilik",
+      "rekening_penampungan": "RT 01 (VP)",
+      "jumlah": 15000000,
+      "is_sample": false
+    },
+    {
+      "tanggal": "2026-10-25",
+      "donatur": "Juwita",
+      "rekening_penampungan": "RT 01 (VP)",
+      "jumlah": 500000,
+      "is_sample": false
+    },
+    {
+      "tanggal": "2026-10-25",
+      "donatur": "Lolita",
+      "rekening_penampungan": "RT 01 (VP)",
+      "jumlah": 500000,
+      "is_sample": false
+    },
+    {
       "tanggal": "2026-10-26",
       "donatur": "C3/6",
       "rekening_penampungan": "Rek RT 02",
@@ -149,55 +170,6 @@
       "is_sample": false
     },
     {
-      "tanggal": "2026-10-28",
-      "donatur": "A2/2",
-      "rekening_penampungan": "Rek RT 02",
-      "jumlah": 10000000,
-      "is_sample": false
-    },
-    {
-      "tanggal": "2026-10-29",
-      "donatur": "Blok D1/12",
-      "rekening_penampungan": "Rek RT 02",
-      "jumlah": 5000000,
-      "is_sample": false
-    },
-    {
-      "tanggal": "2026-10-31",
-      "donatur": "B4/1 Pak Hendra",
-      "rekening_penampungan": "Rek RT 02",
-      "jumlah": 6500000,
-      "is_sample": false
-    },
-    {
-      "tanggal": "2026-10-31",
-      "donatur": "Pak Iswan C6/1-2",
-      "rekening_penampungan": "Rek RT 02",
-      "jumlah": 20000000,
-      "is_sample": false
-    },
-    {
-      "tanggal": "2026-10-25",
-      "donatur": "Trisno Lilik",
-      "rekening_penampungan": "RT 01 (VP)",
-      "jumlah": 15000000,
-      "is_sample": false
-    },
-    {
-      "tanggal": "2026-10-25",
-      "donatur": "Juwita",
-      "rekening_penampungan": "RT 01 (VP)",
-      "jumlah": 500000,
-      "is_sample": false
-    },
-    {
-      "tanggal": "2026-10-25",
-      "donatur": "Lolita",
-      "rekening_penampungan": "RT 01 (VP)",
-      "jumlah": 500000,
-      "is_sample": false
-    },
-    {
       "tanggal": "2026-10-26",
       "donatur": "Indah Riyanti",
       "rekening_penampungan": "RT 01 (VP)",
@@ -233,10 +205,10 @@
       "is_sample": false
     },
     {
-      "tanggal": "2026-11-02",
-      "donatur": "Nancy Effendy",
-      "rekening_penampungan": "RT 01 (VP)",
-      "jumlah": 2000000,
+      "tanggal": "2026-10-28",
+      "donatur": "A2/2",
+      "rekening_penampungan": "Rek RT 02",
+      "jumlah": 10000000,
       "is_sample": false
     },
     {
@@ -247,10 +219,31 @@
       "is_sample": false
     },
     {
+      "tanggal": "2026-10-29",
+      "donatur": "Blok D1/12",
+      "rekening_penampungan": "Rek RT 02",
+      "jumlah": 5000000,
+      "is_sample": false
+    },
+    {
       "tanggal": "2026-10-30",
       "donatur": "Jacob Suantono",
       "rekening_penampungan": "RT 01 (VP)",
       "jumlah": 500000,
+      "is_sample": false
+    },
+    {
+      "tanggal": "2026-10-31",
+      "donatur": "B4/1 Pak Hendra",
+      "rekening_penampungan": "Rek RT 02",
+      "jumlah": 6500000,
+      "is_sample": false
+    },
+    {
+      "tanggal": "2026-10-31",
+      "donatur": "Pak Iswan C6/1-2",
+      "rekening_penampungan": "Rek RT 02",
+      "jumlah": 20000000,
       "is_sample": false
     },
     {
@@ -265,6 +258,13 @@
       "donatur": "Siti Nurhaliza",
       "rekening_penampungan": "RT 01 (VP)",
       "jumlah": 500000,
+      "is_sample": false
+    },
+    {
+      "tanggal": "2026-11-02",
+      "donatur": "Nancy Effendy",
+      "rekening_penampungan": "RT 01 (VP)",
+      "jumlah": 2000000,
       "is_sample": false
     }
   ]
