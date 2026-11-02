@@ -238,6 +238,34 @@
       "rekening_penampungan": "RT 01 (VP)",
       "jumlah": 2000000,
       "is_sample": false
+    },
+    {
+      "tanggal": "2026-10-28",
+      "donatur": "Arnie M",
+      "rekening_penampungan": "RT 01 (VP)",
+      "jumlah": 250000,
+      "is_sample": false
+    },
+    {
+      "tanggal": "2026-10-30",
+      "donatur": "Jacob Suantono",
+      "rekening_penampungan": "RT 01 (VP)",
+      "jumlah": 500000,
+      "is_sample": false
+    },
+    {
+      "tanggal": "2026-10-31",
+      "donatur": "Ine Wijaya",
+      "rekening_penampungan": "RT 01 (VP)",
+      "jumlah": 6500000,
+      "is_sample": false
+    },
+    {
+      "tanggal": "2026-10-31",
+      "donatur": "Siti Nurhaliza",
+      "rekening_penampungan": "RT 01 (VP)",
+      "jumlah": 500000,
+      "is_sample": false
     }
   ]
 }
