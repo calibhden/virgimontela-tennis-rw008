@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-31",
+  "updated_at": "2026-11-02",
   "rows": [
     {
       "tanggal": "2026-10-02",
@@ -174,6 +174,69 @@
       "donatur": "Pak Iswan C6/1-2",
       "rekening_penampungan": "Rek RT 02",
       "jumlah": 20000000,
+      "is_sample": false
+    },
+    {
+      "tanggal": "2026-10-25",
+      "donatur": "Trisno Lilik",
+      "rekening_penampungan": "RT 01 (VP)",
+      "jumlah": 15000000,
+      "is_sample": false
+    },
+    {
+      "tanggal": "2026-10-25",
+      "donatur": "Juwita",
+      "rekening_penampungan": "RT 01 (VP)",
+      "jumlah": 500000,
+      "is_sample": false
+    },
+    {
+      "tanggal": "2026-10-25",
+      "donatur": "Lolita",
+      "rekening_penampungan": "RT 01 (VP)",
+      "jumlah": 500000,
+      "is_sample": false
+    },
+    {
+      "tanggal": "2026-10-26",
+      "donatur": "Indah Riyanti",
+      "rekening_penampungan": "RT 01 (VP)",
+      "jumlah": 2500000,
+      "is_sample": false
+    },
+    {
+      "tanggal": "2026-10-26",
+      "donatur": "Iwan Darmawan",
+      "rekening_penampungan": "RT 01 (VP)",
+      "jumlah": 3000000,
+      "is_sample": false
+    },
+    {
+      "tanggal": "2026-10-26",
+      "donatur": "Joseph Sulistijo",
+      "rekening_penampungan": "RT 01 (VP)",
+      "jumlah": 5000000,
+      "is_sample": false
+    },
+    {
+      "tanggal": "2026-10-26",
+      "donatur": "Friska Natalia",
+      "rekening_penampungan": "RT 01 (VP)",
+      "jumlah": 10000000,
+      "is_sample": false
+    },
+    {
+      "tanggal": "2026-10-26",
+      "donatur": "Sugisman",
+      "rekening_penampungan": "RT 01 (VP)",
+      "jumlah": 1500000,
+      "is_sample": false
+    },
+    {
+      "tanggal": "2026-11-02",
+      "donatur": "Nancy Effendy",
+      "rekening_penampungan": "RT 01 (VP)",
+      "jumlah": 2000000,
       "is_sample": false
     }
   ]
