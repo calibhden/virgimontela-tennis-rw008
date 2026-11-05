@@ -357,6 +357,13 @@
       "rekening_penampungan": "Rek RT 02",
       "jumlah": 1000000,
       "is_sample": false
+    },
+    {
+      "tanggal": "2026-11-05",
+      "donatur": "Pak Edy B8/6",
+      "rekening_penampungan": "Rek RT 02",
+      "jumlah": 5000000,
+      "is_sample": false
     }
   ]
 }
