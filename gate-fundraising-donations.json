@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-02",
+  "updated_at": "2026-11-05",
   "rows": [
     {
       "tanggal": "2026-10-02",
@@ -348,6 +348,13 @@
       "tanggal": "2026-11-02",
       "donatur": "Koleng",
       "rekening_penampungan": "RT 01 (VP)",
+      "jumlah": 1000000,
+      "is_sample": false
+    },
+    {
+      "tanggal": "2026-11-05",
+      "donatur": "Mignonne N. B. Maramis E1/19",
+      "rekening_penampungan": "Rek RT 02",
       "jumlah": 1000000,
       "is_sample": false
     }
