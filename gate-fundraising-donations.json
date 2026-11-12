@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-11",
+  "updated_at": "2026-11-12",
   "rows": [
     {
       "tanggal": "2026-10-02",
@@ -475,6 +475,13 @@
       "donatur": "Pak Enrico C7/11",
       "rekening_penampungan": "Rek RT 02",
       "jumlah": 2000000,
+      "is_sample": false
+    },
+    {
+      "tanggal": "2026-11-12",
+      "donatur": "Pak Deddy E1-20",
+      "rekening_penampungan": "RT 01 (VP)",
+      "jumlah": 5000000,
       "is_sample": false
     }
   ]
