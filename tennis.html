@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#102c26">
   <meta name="description" content="Jadwal, daftar pemain, dan aturan penggunaan Lapangan Tennis RW 008 Virgimontela.">
   <title>Tennis RW 008 Virgimontela</title>
-  <link rel="stylesheet" href="/styles.css?v=20261017-1">
+  <link rel="stylesheet" href="/styles.css?v=20261115-1">
   <link rel="manifest" href="/manifest.webmanifest">
 </head>
 <body>
@@ -73,6 +73,7 @@
         <span><i class="legend-dot priority-3"></i>Prioritas 3</span>
         <span><i class="legend-dot incidental"></i>Insidental</span>
         <span><i class="legend-dot basket"></i>Basket</span>
+        <span><i class="legend-dot low-priority"></i><span aria-hidden="true">↘</span> Prioritas rendah</span>
       </div>
 
       <div class="schedule-shell">
@@ -167,6 +168,8 @@
               </div>
               <input type="hidden" id="booking-id">
               <label>Nama booking<input id="booking-title" required maxlength="80" placeholder="Contoh: VTC A (Tony)"></label>
+              <label>Penanggung jawab booking<select id="booking-owner"><option value="">Belum ditentukan</option></select></label>
+              <p class="player-note-help">Status no-show penanggung jawab menentukan apakah booking ditampilkan sebagai Prioritas Rendah.</p>
               <div class="form-row">
                 <label>Lapangan<select id="booking-court" required><option value="A">Lapangan A</option><option value="B">Lapangan B</option></select></label>
                 <label>Tanggal<input id="booking-date" type="date" required></label>
@@ -356,6 +359,26 @@
     </div>
   </dialog>
 
+  <dialog id="no-show-dialog" class="modal booking-players-editor-modal">
+    <form method="dialog" class="modal-close-form"><button aria-label="Tutup pencatatan no-show">×</button></form>
+    <div class="modal-content">
+      <p class="eyebrow dark">Penegakan aturan</p>
+      <h2 id="no-show-title">Tandai no-show</h2>
+      <p id="no-show-booking-summary"></p>
+      <div class="no-show-phase-note" id="no-show-phase-note"></div>
+      <form id="no-show-form">
+        <fieldset class="no-show-player-fieldset">
+          <legend>Pemain yang bertanggung jawab</legend>
+          <div class="booking-player-checklist" id="no-show-player-checklist"></div>
+        </fieldset>
+        <label>Catatan internal<textarea id="no-show-notes" rows="3" maxlength="500" placeholder="Contoh: Lapangan tidak digunakan dan tidak ada pemberitahuan di grup."></textarea></label>
+        <p class="penalty-help">Kejadian aktif selama 60 hari. Kejadian sebelum 8 November 2026 ditandai sebagai masa transisi dan tidak menghitung larangan booking.</p>
+        <p class="form-message" id="no-show-message" role="status"></p>
+        <button class="button button-primary full" id="save-no-show" type="submit">Simpan catatan no-show</button>
+      </form>
+    </div>
+  </dialog>
+
   <dialog id="invite-password-dialog" class="modal">
     <div class="modal-content">
       <p class="eyebrow dark">Undangan admin</p>
@@ -371,6 +394,6 @@
   </dialog>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="/app.js?v=20261017-1" defer></script>
+  <script src="/app.js?v=20261115-1" defer></script>
 </body>
 </html>

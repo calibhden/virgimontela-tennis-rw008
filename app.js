@@ -7,6 +7,8 @@ const SCHEDULE_END_MINUTES = 22 * 60;
 const COMPACT_START_MINUTES = 11 * 60;
 const COMPACT_END_MINUTES = 15 * 60;
 const COMPACT_TIME_SCALE = 0.25;
+const NO_SHOW_ENFORCEMENT_START = "2026-11-08";
+const NO_SHOW_TAKEOVER_HOURS = 12;
 const SCHEDULE_VISUAL_MINUTES =
   (COMPACT_START_MINUTES - SCHEDULE_START_MINUTES)
   + ((COMPACT_END_MINUTES - COMPACT_START_MINUTES) * COMPACT_TIME_SCALE)
@@ -17,7 +19,10 @@ const state = {
   adminBookingStart: startOfWeek(new Date()),
   bookings: [],
   bookingMap: new Map(),
+  bookingPlayerLinks: [],
   players: [],
+  noShowEvents: [],
+  adminNoShowEvents: [],
   showAllPlayers: false,
   session: readSession(),
   profile: null,
@@ -25,6 +30,7 @@ const state = {
   adminPlayers: [],
   accessProfiles: [],
   bookingPlayerEditor: { bookingId: null, selected: new Set() },
+  noShowEditor: { bookingId: null, selected: new Set() },
 };
 
 const el = (id) => document.getElementById(id);
@@ -35,7 +41,8 @@ async function init() {
   const authRedirectType = await consumeAuthRedirect();
   bindEvents();
   setBookingDateDefault();
-  await Promise.all([loadSchedule(), loadPlayers()]);
+  await Promise.all([loadPlayers(), loadNoShowEvents()]);
+  await loadSchedule();
   if (state.session) await restoreAdminSession();
   if (authRedirectType === "invite" || authRedirectType === "recovery") {
     el("invite-password-dialog").showModal();
@@ -82,6 +89,8 @@ function bindEvents() {
   el("booking-player-search").addEventListener("input", renderBookingPlayerChecklist);
   el("booking-players-form").addEventListener("change", onBookingPlayerSelectionChange);
   el("booking-players-form").addEventListener("submit", saveBookingPlayers);
+  el("no-show-form").addEventListener("change", onNoShowPlayerSelectionChange);
+  el("no-show-form").addEventListener("submit", saveNoShowEvent);
   el("player-form").addEventListener("submit", savePlayer);
   el("reset-player-form").addEventListener("click", resetPlayerForm);
   el("refresh-admin-players").addEventListener("click", loadAdminPlayers);
@@ -336,8 +345,14 @@ async function loadSchedule() {
   try {
     const startFilter = encodeURIComponent(`${dateKey(state.weekStart)}T00:00:00+07:00`);
     const endFilter = encodeURIComponent(`${dateKey(end)}T00:00:00+07:00`);
-    const query = `bookings?select=id,court_id,title,booking_type,priority,resident_ratio,start_at,end_at,status,notes&start_at=gte.${startFilter}&start_at=lt.${endFilter}&status=eq.confirmed&order=start_at.asc`;
-    state.bookings = await api(query);
+    const query = `bookings?select=id,court_id,title,booking_type,priority,resident_ratio,start_at,end_at,status,notes,owner_player_id&start_at=gte.${startFilter}&start_at=lt.${endFilter}&status=eq.confirmed&order=start_at.asc`;
+    try {
+      state.bookings = await api(query);
+    } catch (error) {
+      if (!String(error.message).includes("owner_player_id")) throw error;
+      state.bookings = await api(`bookings?select=id,court_id,title,booking_type,priority,resident_ratio,start_at,end_at,status,notes&start_at=gte.${startFilter}&start_at=lt.${endFilter}&status=eq.confirmed&order=start_at.asc`);
+    }
+    await loadPublicBookingPlayerLinks();
     state.bookingMap = new Map(state.bookings.map((booking) => [booking.id, booking]));
     renderSchedule();
     loading.classList.add("hidden");
@@ -347,6 +362,19 @@ async function loadSchedule() {
     loading.classList.add("hidden");
     errorBox.textContent = `Jadwal belum dapat dimuat: ${error.message}`;
     errorBox.classList.remove("hidden");
+  }
+}
+
+async function loadPublicBookingPlayerLinks() {
+  const ids = state.bookings.map((booking) => booking.id);
+  if (!ids.length) {
+    state.bookingPlayerLinks = [];
+    return;
+  }
+  try {
+    state.bookingPlayerLinks = await api(`booking_players?select=booking_id,player_id&booking_id=in.(${ids.map(encodeURIComponent).join(",")})`);
+  } catch {
+    state.bookingPlayerLinks = [];
   }
 }
 
@@ -398,9 +426,35 @@ function bookingBlock(booking) {
   const leftPercent = scheduleLeftPercent(startMinutes);
   const widthPercent = scheduleLeftPercent(endMinutes) - leftPercent;
   const className = booking.priority ? `priority-${booking.priority}` : booking.booking_type === "basket" ? "basket" : "incidental";
-  return `<button class="booking-block ${className}" type="button" data-booking-id="${escapeHtml(booking.id)}" data-left="${leftPercent}" data-width="${widthPercent}" aria-label="${escapeHtml(booking.title)}, ${formatTime(booking.start_at)} sampai ${formatTime(booking.end_at)}">
-    <strong>${escapeHtml(booking.title)}</strong><span>${formatTime(booking.start_at)}–${formatTime(booking.end_at)}</span>
+  const noShowStatus = bookingNoShowStatus(booking);
+  const statusClass = noShowStatus.code === "clear" ? "" : ` booking-${noShowStatus.code}`;
+  const statusLabel = noShowStatus.code === "clear" ? "" : `, ${noShowStatus.label}`;
+  return `<button class="booking-block ${className}${statusClass}" type="button" data-booking-id="${escapeHtml(booking.id)}" data-left="${leftPercent}" data-width="${widthPercent}" aria-label="${escapeHtml(booking.title)}, ${formatTime(booking.start_at)} sampai ${formatTime(booking.end_at)}${escapeHtml(statusLabel)}">
+    <strong>${noShowStatus.code !== "clear" ? `<span class="booking-status-icon" aria-hidden="true">${escapeHtml(noShowStatus.icon)}</span>` : ""}${escapeHtml(booking.title)}</strong><span>${formatTime(booking.start_at)}–${formatTime(booking.end_at)}</span>
   </button>`;
+}
+
+function bookingResponsiblePlayer(booking) {
+  if (booking.owner_player_id) {
+    const owner = state.players.find((player) => String(player.id) === String(booking.owner_player_id));
+    if (owner) return owner;
+  }
+  const linkedIds = state.bookingPlayerLinks
+    .filter((link) => link.booking_id === booking.id)
+    .map((link) => String(link.player_id));
+  if (linkedIds.length === 1) return state.players.find((player) => String(player.id) === linkedIds[0]) || null;
+  const titleMatches = bookingPlayers(booking);
+  return titleMatches.length === 1 ? titleMatches[0] : null;
+}
+
+function bookingNoShowStatus(booking) {
+  const player = bookingResponsiblePlayer(booking);
+  if (!player) return { code: "clear", label: "Catatan bersih", icon: "", until: null, events: [], player: null };
+  return { ...playerNoShowStatus(player.id), player };
+}
+
+function takeoverDeadline(booking) {
+  return new Date(new Date(booking.start_at).getTime() - (NO_SHOW_TAKEOVER_HOURS * 60 * 60 * 1000));
 }
 
 async function onScheduleClick(event) {
@@ -417,6 +471,10 @@ async function onScheduleClick(event) {
       // Keep the title-based matches if the authenticated lookup is temporarily unavailable.
     }
   }
+  const responsiblePlayer = bookingResponsiblePlayer(booking);
+  if (responsiblePlayer && !matchedPlayers.some((player) => String(player.id) === String(responsiblePlayer.id))) {
+    matchedPlayers = [responsiblePlayer, ...matchedPlayers];
+  }
   renderBookingDetail(booking, matchedPlayers);
   el("booking-dialog").showModal();
 }
@@ -430,9 +488,20 @@ function renderBookingDetail(booking, matchedPlayers) {
     basket: "Basket",
   };
   const adminActions = canManageSchedule();
+  const bookingStatus = bookingNoShowStatus(booking);
+  const deadline = takeoverDeadline(booking);
+  const deadlinePassed = deadline <= new Date();
+  const priorityNotice = bookingStatus.code === "low_priority"
+    ? `<div class="booking-priority-notice low-priority"><strong>↘ Booking Prioritas Rendah</strong><p>${deadlinePassed
+      ? "Batas pengambilalihan H-12 telah lewat; booking tetap untuk pemesan awal."
+      : `Pemain bercatatan bersih dapat mengambil booking ini dengan pemberitahuan di grup dan konfirmasi admin paling lambat ${escapeHtml(formatDateTime(deadline))}.`}</p></div>`
+    : bookingStatus.code.startsWith("suspended_")
+      ? `<div class="booking-priority-notice suspended"><strong>⛔ Pemesan sedang dalam pembatasan booking</strong><p>Hubungi admin penjadwalan untuk memastikan status booking ini.</p></div>`
+      : "";
   el("booking-detail").innerHTML = `
     <p class="eyebrow dark">Lapangan ${escapeHtml(booking.court_id)}</p>
     <h2>${escapeHtml(booking.title)}</h2>
+    ${priorityNotice}
     ${matchedPlayers.length ? `
       <div class="booking-players">
         <p class="booking-players-label">Pemain · alamat dan catatan ditampilkan langsung</p>
@@ -449,6 +518,7 @@ function renderBookingDetail(booking, matchedPlayers) {
               <div class="booking-player-address" id="booking-player-address-${escapeHtml(player.id)}">
                 <strong>${escapeHtml(playerAddressLabel(player))}</strong>
                 <span class="booking-player-note"><b>Catatan:</b> ${escapeHtml(player.public_notes || "Belum ada catatan pemain.")}</span>
+                ${playerNoShowHistory(player.id)}
               </div>
             </div>`).join("")}
         </div>
@@ -595,10 +665,67 @@ async function openSchedulePlayerEditor(playerId) {
 async function loadPlayers() {
   try {
     state.players = await api("players?select=id,full_name,block,house_number,public_notes&is_active=eq.true&order=full_name.asc");
+    renderBookingOwnerOptions();
     renderPlayers();
   } catch (error) {
     el("player-grid").innerHTML = `<p class="empty-state">Daftar pemain belum dapat dimuat: ${escapeHtml(error.message)}</p>`;
   }
+}
+
+async function loadNoShowEvents() {
+  try {
+    const today = dateKey(new Date());
+    state.noShowEvents = await api(`player_no_show_events?select=id,booking_id,player_id,occurred_on,court_id,start_at,end_at,policy_phase,enforcement_strike,sanction_until,expires_on&expires_on=gte.${today}&order=occurred_on.asc`);
+  } catch {
+    // The public schedule stays available while the database migration is being rolled out.
+    state.noShowEvents = [];
+  }
+  renderPlayers();
+}
+
+function renderBookingOwnerOptions() {
+  const select = el("booking-owner");
+  if (!select) return;
+  const selected = select.value;
+  select.innerHTML = `<option value="">Belum ditentukan</option>${state.players.map((player) =>
+    `<option value="${escapeHtml(player.id)}">${escapeHtml(player.full_name)} · ${escapeHtml(playerAddressLabel(player))}</option>`
+  ).join("")}`;
+  if ([...select.options].some((option) => option.value === selected)) select.value = selected;
+}
+
+function activeNoShowEventsFor(playerId) {
+  const today = dateKey(new Date());
+  return state.noShowEvents
+    .filter((event) => String(event.player_id) === String(playerId) && event.expires_on >= today)
+    .sort((a, b) => a.occurred_on.localeCompare(b.occurred_on));
+}
+
+function playerNoShowStatus(playerId) {
+  const events = activeNoShowEventsFor(playerId);
+  const enforced = events.filter((event) => event.policy_phase === "enforced");
+  const today = dateKey(new Date());
+  const strongest = enforced.reduce((current, event) => Number(event.enforcement_strike || 0) > Number(current?.enforcement_strike || 0) ? event : current, null);
+  if (Number(strongest?.enforcement_strike || 0) >= 3 && strongest.sanction_until >= today) {
+    return { code: "suspended_60", label: "Dilarang booking 60 hari", icon: "⛔", until: strongest.sanction_until, events };
+  }
+  if (Number(strongest?.enforcement_strike || 0) >= 2 && strongest.sanction_until >= today) {
+    return { code: "suspended_14", label: "Dilarang booking 14 hari", icon: "⛔", until: strongest.sanction_until, events };
+  }
+  if (events.length) {
+    const until = events.reduce((latest, event) => event.expires_on > latest ? event.expires_on : latest, events[0].expires_on);
+    return { code: "low_priority", label: "Prioritas rendah", icon: "↘", until, events };
+  }
+  return { code: "clear", label: "Catatan bersih", icon: "", until: null, events: [] };
+}
+
+function playerNoShowHistory(playerId) {
+  const status = playerNoShowStatus(playerId);
+  if (status.code === "clear") return "";
+  const rows = status.events.map((event) => {
+    const phase = event.policy_phase === "transition" ? " · masa transisi" : "";
+    return `<li>No-show ${escapeHtml(formatDateOnly(event.occurred_on))}${phase} · aktif sampai ${escapeHtml(formatDateOnly(event.expires_on))}</li>`;
+  }).join("");
+  return `<div class="player-no-show-card ${status.code}"><strong>${escapeHtml(status.icon)} ${escapeHtml(status.label)}</strong><ul>${rows}</ul></div>`;
 }
 
 function renderPlayers() {
@@ -607,7 +734,10 @@ function renderPlayers() {
   const visible = query || state.showAllPlayers ? filtered : filtered.slice(0, 24);
   el("player-count").textContent = state.players.length || "—";
   el("player-grid").innerHTML = visible.length
-    ? visible.map((player) => `<div class="player-chip"><span class="player-initial">${escapeHtml(initials(player.full_name))}</span><span class="player-name">${escapeHtml(player.full_name)}</span><span class="player-address">${escapeHtml(playerAddressLabel(player))}</span></div>`).join("")
+    ? visible.map((player) => {
+      const status = playerNoShowStatus(player.id);
+      return `<div class="player-chip${status.code !== "clear" ? " has-no-show-status" : ""}"><span class="player-initial">${escapeHtml(initials(player.full_name))}</span><span class="player-name">${escapeHtml(player.full_name)}${status.code !== "clear" ? ` <small class="player-status-icon" title="${escapeHtml(status.label)}">${escapeHtml(status.icon)}</small>` : ""}</span><span class="player-address">${escapeHtml(playerAddressLabel(player))}</span></div>`;
+    }).join("")
     : `<p class="empty-state">Tidak ada nama yang cocok.</p>`;
   el("show-all-players").classList.toggle("hidden", Boolean(query) || state.showAllPlayers || filtered.length <= 24);
 }
@@ -765,6 +895,7 @@ function renderAdminBookings() {
       </div>
       <div class="admin-list-actions">
         <button class="mini-button" type="button" data-edit-booking="${escapeHtml(booking.id)}">Edit</button>
+        ${booking.status === "confirmed" ? `<button class="mini-button warning" type="button" data-no-show-booking="${escapeHtml(booking.id)}">Tandai no-show</button>` : ""}
         ${booking.status === "confirmed" ? `<button class="mini-button danger" type="button" data-cancel-booking="${escapeHtml(booking.id)}">Batalkan</button>` : ""}
       </div>
     </div>`).join("");
@@ -790,6 +921,7 @@ async function saveBooking(event) {
 
   const payload = {
     title: el("booking-title").value.trim(),
+    owner_player_id: el("booking-owner").value ? Number(el("booking-owner").value) : null,
     court_id: el("booking-court").value,
     booking_type: el("booking-type").value,
     priority: el("booking-priority").value ? Number(el("booking-priority").value) : null,
@@ -819,9 +951,81 @@ async function saveBooking(event) {
 
 function onAdminBookingAction(event) {
   const edit = event.target.closest("[data-edit-booking]");
+  const noShow = event.target.closest("[data-no-show-booking]");
   const cancel = event.target.closest("[data-cancel-booking]");
   if (edit) editBooking(edit.dataset.editBooking);
+  if (noShow) openNoShowDialog(noShow.dataset.noShowBooking);
   if (cancel) cancelBooking(cancel.dataset.cancelBooking);
+}
+
+async function openNoShowDialog(bookingId) {
+  const booking = state.adminBookings.find((item) => item.id === bookingId) || state.bookingMap.get(bookingId);
+  if (!booking || !canManageSchedule()) return;
+  state.noShowEditor = { bookingId, selected: new Set() };
+  el("no-show-title").textContent = `Tandai no-show · ${booking.title}`;
+  el("no-show-booking-summary").textContent = `${formatDateTime(booking.start_at)}–${formatTime(booking.end_at)} · Lapangan ${booking.court_id}`;
+  const bookingDate = jakartaDateKey(booking.start_at);
+  const isTransition = bookingDate < NO_SHOW_ENFORCEMENT_START;
+  el("no-show-phase-note").innerHTML = isTransition
+    ? `<strong>Masa transisi</strong><span>Kejadian menimbulkan Prioritas Rendah selama 60 hari, tetapi tidak menghitung larangan booking.</span>`
+    : `<strong>Aturan penuh</strong><span>Kejadian dihitung untuk tahapan peringatan dan pembatasan booking.</span>`;
+  el("no-show-notes").value = "";
+  setMessage(el("no-show-message"), "Memuat pemain…");
+  el("no-show-dialog").showModal();
+
+  let selectedPlayers = [];
+  if (booking.owner_player_id) {
+    selectedPlayers = state.players.filter((player) => String(player.id) === String(booking.owner_player_id));
+  }
+  if (!selectedPlayers.length) {
+    try { selectedPlayers = await loadLinkedBookingPlayers(booking.id); } catch { /* use title matching below */ }
+  }
+  if (!selectedPlayers.length) selectedPlayers = bookingPlayers(booking);
+  state.noShowEditor.selected = new Set(selectedPlayers.map((player) => String(player.id)));
+  renderNoShowPlayerChecklist();
+  setMessage(el("no-show-message"), "");
+}
+
+function renderNoShowPlayerChecklist() {
+  el("no-show-player-checklist").innerHTML = state.players.map((player) => `
+    <label class="booking-player-option">
+      <input type="checkbox" name="no-show-player" value="${escapeHtml(player.id)}" ${state.noShowEditor.selected.has(String(player.id)) ? "checked" : ""}>
+      <span><strong>${escapeHtml(player.full_name)}</strong><small>${escapeHtml(playerAddressLabel(player))}</small></span>
+    </label>`).join("");
+}
+
+function onNoShowPlayerSelectionChange(event) {
+  if (!event.target.matches('input[name="no-show-player"]')) return;
+  if (event.target.checked) state.noShowEditor.selected.add(String(event.target.value));
+  else state.noShowEditor.selected.delete(String(event.target.value));
+}
+
+async function saveNoShowEvent(event) {
+  event.preventDefault();
+  const message = el("no-show-message");
+  const button = el("save-no-show");
+  if (!state.noShowEditor.selected.size) return setMessage(message, "Pilih minimal satu pemain yang bertanggung jawab.", true);
+  button.disabled = true;
+  setMessage(message, "Menyimpan catatan…");
+  try {
+    const inserted = await api("rpc/record_booking_no_show", {
+      method: "POST",
+      body: {
+        target_booking_id: state.noShowEditor.bookingId,
+        target_player_ids: [...state.noShowEditor.selected].map(Number),
+        event_notes: el("no-show-notes").value.trim() || null,
+      },
+      authenticated: true,
+    });
+    el("no-show-dialog").close();
+    await Promise.all([loadNoShowEvents(), loadAdminNoShowEvents()]);
+    await Promise.all([loadSchedule(), loadAdminBookings(), loadAdminPlayers()]);
+    toast(inserted ? "Catatan no-show berhasil disimpan" : "No-show untuk pemain tersebut sudah tercatat");
+  } catch (error) {
+    setMessage(message, error.message, true);
+  } finally {
+    button.disabled = false;
+  }
 }
 
 function editBooking(id) {
@@ -829,6 +1033,7 @@ function editBooking(id) {
   if (!booking) return;
   el("booking-id").value = booking.id;
   el("booking-title").value = booking.title;
+  el("booking-owner").value = booking.owner_player_id || "";
   el("booking-court").value = booking.court_id;
   el("booking-date").value = jakartaDateKey(booking.start_at);
   el("booking-start").value = formatTime(booking.start_at);
@@ -845,6 +1050,7 @@ function editBooking(id) {
 function resetBookingForm() {
   el("booking-form").reset();
   el("booking-id").value = "";
+  el("booking-owner").value = "";
   el("booking-form-title").textContent = "Tambah booking";
   el("reset-booking-form").classList.add("hidden");
   setBookingDateDefault();
@@ -869,6 +1075,7 @@ async function loadAdminPlayers() {
     const [players, privateRows] = await Promise.all([
       api("players?select=id,full_name,is_active,block,house_number,public_notes&order=full_name.asc", { authenticated: true }),
       api("player_private?select=player_id,booking_reputation,email,phone,player_status,in_whatsapp,penalty_status,penalty_until,penalty_notes", { authenticated: true }),
+      loadAdminNoShowEvents(),
     ]);
     const privateMap = new Map(privateRows.map((row) => [row.player_id, row]));
     state.adminPlayers = players.map((player) => ({ ...player, ...(privateMap.get(player.id) || {}) }));
@@ -876,6 +1083,27 @@ async function loadAdminPlayers() {
   } catch (error) {
     el("admin-player-list").innerHTML = `<p class="empty-state">${escapeHtml(error.message)}</p>`;
   }
+}
+
+async function loadAdminNoShowEvents() {
+  if (!canManageSchedule()) return [];
+  try {
+    state.adminNoShowEvents = await api("player_no_show_events?select=*&voided_at=is.null&order=occurred_on.desc", { authenticated: true });
+  } catch {
+    state.adminNoShowEvents = [];
+  }
+  return state.adminNoShowEvents;
+}
+
+function adminNoShowHistory(playerId) {
+  const events = state.adminNoShowEvents.filter((event) => String(event.player_id) === String(playerId));
+  if (!events.length) return "";
+  return `<div class="admin-no-show-history"><strong>Riwayat no-show</strong>${events.map((event) => `
+    <div class="admin-no-show-event">
+      <span>${escapeHtml(formatDateOnly(event.occurred_on))} · Lapangan ${escapeHtml(event.court_id || "—")} · ${event.policy_phase === "transition" ? "Transisi" : "Aturan penuh"} · aktif sampai ${escapeHtml(formatDateOnly(event.expires_on))}</span>
+      ${event.internal_notes ? `<small>${escapeHtml(event.internal_notes)}</small>` : ""}
+      <button class="mini-button danger" type="button" data-void-no-show="${escapeHtml(event.id)}">Batalkan catatan</button>
+    </div>`).join("")}</div>`;
 }
 
 function renderAdminPlayers() {
@@ -897,6 +1125,7 @@ function renderAdminPlayers() {
             ${penaltyUntil ? `<span>sampai ${escapeHtml(penaltyUntil)}</span>` : ""}
           </div>
           ${player.penalty_notes ? `<p class="penalty-note">${escapeHtml(player.penalty_notes)}</p>` : ""}
+          ${adminNoShowHistory(player.id)}
         </div>
         <span class="badge ${player.player_status ? "" : "pending"}">${escapeHtml(playerStatusLabel(player.player_status))}</span>
       </div>
@@ -927,8 +1156,29 @@ function penaltyStatusTone(status) {
 }
 
 function onAdminPlayerAction(event) {
+  const voidNoShow = event.target.closest("[data-void-no-show]");
+  if (voidNoShow) {
+    voidNoShowEvent(voidNoShow.dataset.voidNoShow);
+    return;
+  }
   const button = event.target.closest("[data-edit-player]");
   if (button) editPlayer(button.dataset.editPlayer);
+}
+
+async function voidNoShowEvent(eventId) {
+  if (!window.confirm("Batalkan catatan no-show ini? Status publik dan perhitungan penalti akan diperbarui.")) return;
+  try {
+    await api("rpc/void_no_show_event", {
+      method: "POST",
+      body: { target_event_id: eventId },
+      authenticated: true,
+    });
+    await Promise.all([loadNoShowEvents(), loadAdminNoShowEvents()]);
+    await Promise.all([loadSchedule(), loadAdminPlayers()]);
+    toast("Catatan no-show dibatalkan");
+  } catch (error) {
+    toast(error.message);
+  }
 }
 
 function editPlayer(id) {
