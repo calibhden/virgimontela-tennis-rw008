@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-12",
+  "updated_at": "2026-11-15",
   "rows": [
     {
       "tanggal": "2026-10-02",
@@ -471,6 +471,13 @@
       "is_sample": false
     },
     {
+      "tanggal": "2026-11-09",
+      "donatur": "Joyce",
+      "rekening_penampungan": "RT 01 (VP)",
+      "jumlah": 2000000,
+      "is_sample": false
+    },
+    {
       "tanggal": "2026-11-11",
       "donatur": "Pak Enrico C7/11",
       "rekening_penampungan": "Rek RT 02",
@@ -480,6 +487,20 @@
     {
       "tanggal": "2026-11-12",
       "donatur": "Pak Deddy E1-20",
+      "rekening_penampungan": "RT 01 (VP)",
+      "jumlah": 5000000,
+      "is_sample": false
+    },
+    {
+      "tanggal": "2026-11-15",
+      "donatur": "Wishnu",
+      "rekening_penampungan": "RT 01 (VP)",
+      "jumlah": 1000000,
+      "is_sample": false
+    },
+    {
+      "tanggal": "2026-11-15",
+      "donatur": "Yenny Bhimo",
       "rekening_penampungan": "RT 01 (VP)",
       "jumlah": 5000000,
       "is_sample": false
