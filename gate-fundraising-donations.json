@@ -492,6 +492,13 @@
       "is_sample": false
     },
     {
+      "tanggal": "2026-11-12",
+      "donatur": "Freddy Setiawan",
+      "rekening_penampungan": "RT 01 (VP)",
+      "jumlah": 15000000,
+      "is_sample": false
+    },
+    {
       "tanggal": "2026-11-15",
       "donatur": "Wishnu",
       "rekening_penampungan": "RT 01 (VP)",
@@ -503,6 +510,13 @@
       "donatur": "Yenny Bhimo",
       "rekening_penampungan": "RT 01 (VP)",
       "jumlah": 5000000,
+      "is_sample": false
+    },
+    {
+      "tanggal": "2026-11-16",
+      "donatur": "Pak Simbolon A2/17",
+      "rekening_penampungan": "Rek RT 02",
+      "jumlah": 1000000,
       "is_sample": false
     }
   ]
