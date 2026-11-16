@@ -1,9 +1,9 @@
 {
-  "updated_at": "2026-11-15",
+  "updated_at": "2026-11-16",
   "rows": [
     {
       "tanggal": "2026-10-02",
-      "donatur": "Anonim",
+      "donatur": "H. Bobby",
       "rekening_penampungan": "Rek RT 02",
       "jumlah": 200000000,
       "is_sample": false
