@@ -1,11 +1,29 @@
 {
-  "updated_at": "2026-10-19",
+  "updated_at": "2026-11-22",
   "rows": [
     {
       "tanggal": "2026-09-29",
-      "uraian": "Jasa arsitek untuk pengembangan konsep gate",
+      "uraian": "Pembayaran tahap awal jasa arsitek dan pengembangan konsep gate",
+      "penerima": "Irvan + Novi Associates (Arsitektur - University Teknologi Yogyakarta)",
+      "jumlah": 12000000,
+      "keterangan": null,
+      "bukti_url": null,
+      "is_sample": false
+    },
+    {
+      "tanggal": "2026-11-22",
+      "uraian": "Pelunasan detailed drawing",
       "penerima": "Irvan + Novi Associates (Arsitektur - University Teknologi Yogyakarta)",
       "jumlah": 8000000,
+      "keterangan": "Total pembayaran kepada arsitek menjadi Rp20.000.000",
+      "bukti_url": null,
+      "is_sample": false
+    },
+    {
+      "tanggal": "2026-11-22",
+      "uraian": "Pekerjaan sondir",
+      "penerima": null,
+      "jumlah": 12000000,
       "keterangan": null,
       "bukti_url": null,
       "is_sample": false
