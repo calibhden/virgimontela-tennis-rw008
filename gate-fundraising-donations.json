@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-19",
+  "updated_at": "2026-11-22",
   "rows": [
     {
       "tanggal": "2026-10-02",
@@ -559,6 +559,13 @@
       "donatur": "Hendra Setiawan",
       "rekening_penampungan": "Rek RT 02",
       "jumlah": 1000000,
+      "is_sample": false
+    },
+    {
+      "tanggal": "2026-11-21",
+      "donatur": "Pak Wendi C5/1A-B",
+      "rekening_penampungan": "Rek RT 02",
+      "jumlah": 20000000,
       "is_sample": false
     }
   ]
