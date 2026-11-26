@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 220" role="img" aria-labelledby="t3 d3">
+  <title id="t3">Ilustrasi Penghematan Pondasi dari Hasil Uji Sondir</title>
+  <desc id="d3">Perbandingan kedalaman pondasi: hasil sondir menemukan tanah keras di 1,25 meter sehingga cukup menggunakan pondasi footplate tanpa Strauss pile yang dalam dan mahal.</desc>
+  <rect width="560" height="220" rx="16" fill="#092119"/>
+  <rect x="1" y="1" width="558" height="218" rx="15" fill="none" stroke="#d1b26c" stroke-opacity="0.35"/>
+
+  <!-- Left panel: Without Sondir (Strauss Pile) -->
+  <text x="24" y="28" fill="#a8b8b0" font-family="ui-sans-serif, sans-serif" font-size="10" font-weight="800" letter-spacing="1">ASUMSI AWAL (MAHAL)</text>
+  <text x="24" y="45" fill="#ffffff" font-family="Georgia, serif" font-size="14">Pondasi Strauss Pile Dalam</text>
+  <rect x="24" y="64" width="230" height="12" fill="#2b5244"/>
+  <rect x="24" y="76" width="230" height="36" fill="#1a332a"/>
+  <rect x="24" y="112" width="230" height="86" fill="#2e2a22"/>
+  <!-- Deep piles -->
+  <rect x="76" y="64" width="22" height="122" rx="3" fill="#8d7e6a" stroke="#c2b49f"/>
+  <rect x="172" y="64" width="22" height="122" rx="3" fill="#8d7e6a" stroke="#c2b49f"/>
+  <text x="139" y="180" text-anchor="middle" fill="#d9cfc0" font-family="ui-sans-serif, sans-serif" font-size="10" font-weight="700">Bore pile dalam · biaya jauh lebih tinggi</text>
+
+  <!-- Divider -->
+  <line x1="280" y1="20" x2="280" y2="200" stroke="#ffffff" stroke-opacity="0.16" stroke-dasharray="4 4"/>
+
+  <!-- Right panel: After Sondir (Footplate) -->
+  <text x="304" y="28" fill="#eadcb9" font-family="ui-sans-serif, sans-serif" font-size="10" font-weight="800" letter-spacing="1">HASIL SONDIR · 11–12 NOV (HEMAT)</text>
+  <text x="304" y="45" fill="#ffffff" font-family="Georgia, serif" font-size="14">Tanah Keras di 1,25 m → Footplate</text>
+  <rect x="304" y="64" width="232" height="12" fill="#2b5244"/>
+  <rect x="304" y="76" width="232" height="36" fill="#1a332a"/>
+  <rect x="304" y="112" width="232" height="86" fill="#3a3324"/>
+  <line x1="304" y1="112" x2="536" y2="112" stroke="#eadcb9" stroke-width="1.5" stroke-dasharray="5 3"/>
+  <text x="530" y="106" text-anchor="end" fill="#eadcb9" font-family="ui-sans-serif, sans-serif" font-size="9.5" font-weight="800">TANAH KERAS ~1,25 m</text>
+  <!-- Footplates -->
+  <rect x="356" y="64" width="24" height="44" fill="#d1b26c"/>
+  <rect x="336" y="108" width="64" height="16" rx="3" fill="#eadcb9"/>
+  <rect x="454" y="64" width="24" height="44" fill="#d1b26c"/>
+  <rect x="434" y="108" width="64" height="16" rx="3" fill="#eadcb9"/>
+  <text x="420" y="154" text-anchor="middle" fill="#ffffff" font-family="ui-sans-serif, sans-serif" font-size="10.5" font-weight="800">12 Titik Pondasi Tapak (Footplate)</text>
+  <text x="420" y="172" text-anchor="middle" fill="#eadcb9" font-family="ui-sans-serif, sans-serif" font-size="10">Masuk RAB Sipil II.2: Rp47,52 juta</text>
+</svg>

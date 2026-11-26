@@ -1,13 +1,15 @@
 /* Transparansi dana Gate Virgimontela — data dibaca dari catatan publik dengan fallback Supabase.
  * Penerimaan: gate-fundraising-donations.json; fallback public.gate_fundraising_donations
- * Pengeluaran: public.gate_fundraising_expenses
+ * Pengeluaran: gate-fundraising-expenses.json; fallback public.gate_fundraising_expenses
  */
 (function () {
   "use strict";
 
   var SUPABASE_URL = "https://uakhvqjqyplkuxfleggk.supabase.co";
   var SUPABASE_KEY = "sb_publishable_5nSODU833YAt89vnbNaUGA_MtqGYGAR";
+  var TARGET_ESTIMATE = 800076289;
   var BULAN = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+  var allDonationRows = [];
 
   function formatRupiah(nilai) {
     return "Rp" + new Intl.NumberFormat("id-ID").format(Number(nilai) || 0);
@@ -46,7 +48,7 @@
   }
 
   async function fetchPublishedDonations() {
-    var res = await fetch("/gate-fundraising-donations.json?v=20261021-3");
+    var res = await fetch("/gate-fundraising-donations.json?v=20261126-2");
     if (!res.ok) throw new Error("HTTP " + res.status);
     var data = await res.json();
     return Array.isArray(data) ? data : (data.rows || []);
@@ -67,7 +69,7 @@
   }
 
   async function fetchPublishedExpenses() {
-    var res = await fetch("/gate-fundraising-expenses.json?v=20261122-1");
+    var res = await fetch("/gate-fundraising-expenses.json?v=20261126-2");
     if (!res.ok) throw new Error("HTTP " + res.status);
     var data = await res.json();
     return Array.isArray(data) ? data : (data.rows || []);
@@ -106,6 +108,46 @@
     element.classList.toggle("pending", Boolean(pending));
   }
 
+  function renderDonationRows(rows, query) {
+    var tbody = document.getElementById("fundraising-rows");
+    var countEl = document.getElementById("donations-count");
+    if (!tbody) return;
+
+    var term = String(query || "").trim().toLowerCase();
+    var visible = term
+      ? rows.filter(function (row) {
+          var haystack = [
+            formatTanggal(row.tanggal),
+            row.donatur || "",
+            row.rekening_penampungan || ""
+          ].join(" ").toLowerCase();
+          return haystack.indexOf(term) !== -1;
+        })
+      : rows;
+
+    if (countEl) {
+      countEl.textContent = term
+        ? "Menampilkan " + visible.length + " dari " + rows.length + " catatan donasi"
+        : rows.length + " catatan donasi tercatat";
+    }
+
+    if (visible.length === 0) {
+      tbody.innerHTML = term
+        ? '<tr><td class="fundraising-empty" colspan="4">Tidak ada catatan yang cocok dengan "' + escapeHtml(term) + '".</td></tr>'
+        : '<tr><td class="fundraising-empty" colspan="4">Belum ada data sumbangan yang dipublikasikan.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = visible.map(function (row) {
+      return (
+        "<tr><td>" + escapeHtml(formatTanggal(row.tanggal)) + "</td>" +
+        "<td>" + optionalText(row.donatur) + "</td>" +
+        "<td>" + optionalText(row.rekening_penampungan) + "</td>" +
+        '<td class="amount">' + escapeHtml(formatRupiah(row.jumlah)) + "</td></tr>"
+      );
+    }).join("");
+  }
+
   function renderDonationTable(rows, failed) {
     var tbody = document.getElementById("fundraising-rows");
     var totalCell = document.getElementById("fundraising-total");
@@ -118,19 +160,9 @@
       return;
     }
 
-    if (rows.length === 0) {
-      tbody.innerHTML = '<tr><td class="fundraising-empty" colspan="4">Belum ada data sumbangan yang dipublikasikan.</td></tr>';
-    } else {
-      tbody.innerHTML = rows.map(function (row) {
-        return (
-          "<tr><td>" + escapeHtml(formatTanggal(row.tanggal)) + "</td>" +
-          "<td>" + optionalText(row.donatur) + "</td>" +
-          "<td>" + optionalText(row.rekening_penampungan) + "</td>" +
-          '<td class="amount">' + escapeHtml(formatRupiah(row.jumlah)) + "</td></tr>"
-        );
-      }).join("");
-    }
-
+    allDonationRows = rows;
+    var searchInput = document.getElementById("donations-search");
+    renderDonationRows(rows, searchInput ? searchInput.value : "");
     totalCell.textContent = formatRupiah(totalOf(rows));
     if (sampleNote) sampleNote.hidden = !isAllSample(rows);
   }
@@ -183,6 +215,41 @@
     if (sampleNote) sampleNote.hidden = !isAllSample(expenses.rows);
   }
 
+  function renderProgressMeters(donations, donationFailed) {
+    var total = donationFailed ? 0 : totalOf(donations);
+    var clamped = Math.min(total, TARGET_ESTIMATE);
+    var pct = Math.round((total / TARGET_ESTIMATE) * 100);
+    var remaining = Math.max(0, TARGET_ESTIMATE - total);
+
+    var mainBar = document.getElementById("fundraising-progress-bar");
+    var mainPct = document.getElementById("fundraising-progress-pct");
+    var mainRemaining = document.getElementById("fundraising-progress-remaining");
+    if (mainBar) {
+      mainBar.max = TARGET_ESTIMATE;
+      mainBar.value = clamped;
+    }
+    if (mainPct) {
+      mainPct.textContent = donationFailed ? "—" : pct + "% dari 2 paket inti (Rp800,1 jt)";
+    }
+    if (mainRemaining) {
+      mainRemaining.textContent = donationFailed
+        ? "Data belum tersedia"
+        : (remaining > 0
+            ? "Selisih ke 2 paket inti: " + formatRupiah(remaining) + " (diluar signage & existing gate)"
+            : "Kebutuhan 2 paket inti Rp800,1 jt telah tercapai");
+    }
+
+    var homeBar = document.getElementById("home-progress-bar");
+    var homePct = document.getElementById("home-progress-pct");
+    if (homeBar) {
+      homeBar.max = TARGET_ESTIMATE;
+      homeBar.value = clamped;
+    }
+    if (homePct) {
+      homePct.textContent = donationFailed ? "—" : pct + "% dari paket inti";
+    }
+  }
+
   function renderCashflow(donations, donationFailed, expenses, expenseFailed) {
     var donationsEl = document.getElementById("cashflow-donations-total");
     var expensesEl = document.getElementById("cashflow-expenses-total");
@@ -221,7 +288,17 @@
     if (sampleEl) sampleEl.hidden = !isAllSample(donations);
   }
 
+  function wireSearch() {
+    var searchInput = document.getElementById("donations-search");
+    if (!searchInput) return;
+    searchInput.addEventListener("input", function () {
+      renderDonationRows(allDonationRows, searchInput.value);
+    });
+  }
+
   async function loadFinancialData() {
+    wireSearch();
+
     var donationState = { rows: [], failed: false };
     var expenseState = { data: { available: false, rows: [] }, failed: false };
 
@@ -240,6 +317,7 @@
 
     renderDonationTable(donationState.rows, donationState.failed);
     renderExpenseTable(expenseState.data, expenseState.failed);
+    renderProgressMeters(donationState.rows, donationState.failed);
     renderCashflow(
       donationState.rows,
       donationState.failed,
