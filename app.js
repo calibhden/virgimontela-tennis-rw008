@@ -2,15 +2,6 @@ const SUPABASE_URL = "https://uakhvqjqyplkuxfleggk.supabase.co";
 const SUPABASE_KEY = "sb_publishable_5nSODU833YAt89vnbNaUGA_MtqGYGAR";
 const SESSION_KEY = "virgimontela_admin_session";
 const JAKARTA_TZ = "Asia/Jakarta";
-const SCHEDULE_START_MINUTES = 5 * 60;
-const SCHEDULE_END_MINUTES = 22 * 60;
-const COMPACT_START_MINUTES = 11 * 60;
-const COMPACT_END_MINUTES = 15 * 60;
-const COMPACT_TIME_SCALE = 0.25;
-const SCHEDULE_VISUAL_MINUTES =
-  (COMPACT_START_MINUTES - SCHEDULE_START_MINUTES)
-  + ((COMPACT_END_MINUTES - COMPACT_START_MINUTES) * COMPACT_TIME_SCALE)
-  + (SCHEDULE_END_MINUTES - COMPACT_END_MINUTES);
 
 const state = {
   weekStart: startOfWeek(new Date()),
@@ -172,26 +163,75 @@ function jakartaTimeMinutes(value) {
   return (hour * 60) + minute;
 }
 
-function scheduleVisualOffset(totalMinutes) {
-  const minutes = Math.min(Math.max(totalMinutes, SCHEDULE_START_MINUTES), SCHEDULE_END_MINUTES);
-  if (minutes <= COMPACT_START_MINUTES) return minutes - SCHEDULE_START_MINUTES;
-  if (minutes <= COMPACT_END_MINUTES) {
-    return (COMPACT_START_MINUTES - SCHEDULE_START_MINUTES)
-      + ((minutes - COMPACT_START_MINUTES) * COMPACT_TIME_SCALE);
+function computeCompactLayout(bookings) {
+  let earliestStart = 5 * 60 + 30;
+  let morningEnd = 10 * 60 + 30;
+  let eveningStart = 15 * 60;
+  let latestEnd = 20 * 60 + 30;
+  let hasMidday = false;
+
+  for (const booking of bookings) {
+    const start = jakartaTimeMinutes(booking.start_at);
+    const end = start + Math.round((new Date(booking.end_at) - new Date(booking.start_at)) / 60000);
+    if (start < earliestStart) earliestStart = start;
+    if (end > latestEnd) latestEnd = end;
+    if (start < 12 * 60 && end > morningEnd && end <= 13 * 60) morningEnd = end;
+    if (start >= 13 * 60 && start < eveningStart) eveningStart = start;
+    if (start < 15 * 60 && end > 11 * 60 && !(end <= morningEnd)) hasMidday = true;
   }
-  return (COMPACT_START_MINUTES - SCHEDULE_START_MINUTES)
-    + ((COMPACT_END_MINUTES - COMPACT_START_MINUTES) * COMPACT_TIME_SCALE)
-    + (minutes - COMPACT_END_MINUTES);
+
+  const startMin = earliestStart < 5 * 60 + 30 ? 5 * 60 : 5 * 60 + 15;
+  const mEnd = Math.min(12 * 60, Math.ceil(morningEnd / 30) * 30);
+  const eStart = Math.max(mEnd, Math.floor(eveningStart / 30) * 30);
+  const endMin = Math.min(22 * 60, Math.max(21 * 60, Math.ceil(latestEnd / 30) * 30));
+
+  const morningSpan = mEnd - startMin;
+  const middayReal = Math.max(0, eStart - mEnd);
+  const middayVisual = middayReal === 0 ? 0 : (hasMidday ? middayReal * 0.45 : 32);
+  const eveningSpan = endMin - eStart;
+  const totalVisual = morningSpan + middayVisual + eveningSpan;
+
+  function toPercent(rawMinutes) {
+    const m = Math.min(Math.max(rawMinutes, startMin), endMin);
+    if (m <= mEnd) return ((m - startMin) / totalVisual) * 100;
+    if (m <= eStart) {
+      const ratio = middayReal > 0 ? (m - mEnd) / middayReal : 0;
+      return ((morningSpan + ratio * middayVisual) / totalVisual) * 100;
+    }
+    return ((morningSpan + middayVisual + (m - eStart)) / totalVisual) * 100;
+  }
+
+  const ticks = [];
+  for (let h = Math.ceil(startMin / 60); h <= Math.floor(mEnd / 60); h += 1) {
+    if (h * 60 <= mEnd) ticks.push(h);
+  }
+  for (let h = Math.ceil(eStart / 60); h <= Math.floor(endMin / 60); h += 1) {
+    if (!ticks.includes(h)) ticks.push(h);
+  }
+
+  return {
+    startMin,
+    mEnd,
+    eStart,
+    endMin,
+    hasMidday,
+    middayLeft: toPercent(mEnd),
+    middayWidth: toPercent(eStart) - toPercent(mEnd),
+    ticks,
+    toPercent,
+  };
 }
 
-function scheduleLeftPercent(totalMinutes) {
-  return (scheduleVisualOffset(totalMinutes) / SCHEDULE_VISUAL_MINUTES) * 100;
+function bookingClassName(booking) {
+  return booking.priority ? `priority-${booking.priority}` : booking.booking_type === "basket" ? "basket" : "incidental";
 }
 
-function scheduleGridSegments() {
-  return `<span class="time-segment time-segment-morning" aria-hidden="true"></span>
-    <span class="time-segment time-segment-compact" aria-hidden="true"></span>
-    <span class="time-segment time-segment-evening" aria-hidden="true"></span>`;
+function bookingRangeMinutes(booking) {
+  const start = new Date(booking.start_at);
+  const end = new Date(booking.end_at);
+  const startMinutes = jakartaTimeMinutes(start);
+  const durationMinutes = Math.max(15, Math.round((end - start) / 60000));
+  return { startMinutes, endMinutes: startMinutes + durationMinutes };
 }
 
 function dateTimeWithJakartaOffset(date, time) {
@@ -353,54 +393,228 @@ async function loadSchedule() {
 function renderSchedule() {
   const canvas = el("schedule-canvas");
   const days = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
-  const gridSegments = scheduleGridSegments();
-  let html = `<div class="schedule-header"><div class="schedule-corner">Hari · Court</div><div class="time-axis">${gridSegments}`;
-  for (let hour = 5; hour <= 22; hour += 1) {
-    const compactLabel = hour >= 11 && hour <= 15;
-    const fullLabel = `${String(hour).padStart(2, "0")}:00`;
-    html += `<span class="time-label${compactLabel ? " time-label-compact" : ""}" data-left="${scheduleLeftPercent(hour * 60)}" aria-label="${fullLabel}" title="${fullLabel}">${compactLabel ? hour : fullLabel}</span>`;
-  }
-  html += `</div></div>`;
+  const todayKey = jakartaDateKey(new Date());
 
+  const dayEntries = [];
   for (let dayIndex = 0; dayIndex < 7; dayIndex += 1) {
     const date = addDays(state.weekStart, dayIndex);
     const key = dateKey(date);
-    const dayClasses = `${dayIndex === 0 ? " week-start" : ""}${[2, 4, 6].includes(dayIndex) ? " day-shaded" : ""}`;
-    for (const court of ["A", "B"]) {
-      const rowBookings = state.bookings.filter((booking) => booking.court_id === court && jakartaDateKey(booking.start_at) === key);
-      html += `<div class="schedule-row${dayClasses}${court === "A" && dayIndex > 0 ? " day-start" : ""}">
-        <div class="row-label"><div><strong>${days[dayIndex]}</strong><span>${formatDate(date, { year: undefined })}</span></div><b class="court-badge court-${court.toLowerCase()}" aria-label="Lapangan ${court}">${court}</b></div>
-        <div class="timeline-row">${gridSegments}`;
-      for (const booking of rowBookings) html += bookingBlock(booking);
-      html += `</div></div>`;
-    }
+    dayEntries.push({
+      dayIndex,
+      dayName: days[dayIndex],
+      dateLabel: formatDate(date, { year: undefined }),
+      key,
+      isToday: key === todayKey,
+    });
   }
-  canvas.innerHTML = html;
+
+  const desktopHtml = buildDesktopV3Html(dayEntries);
+  const mobileHtml = buildMobileSplitHtml(dayEntries);
+  canvas.innerHTML = `<div class="schedule-view-desktop">${desktopHtml}</div><div class="schedule-view-split">${mobileHtml}</div>`;
   applySchedulePositions(canvas);
 }
 
-function applySchedulePositions(canvas) {
-  canvas.querySelectorAll(".time-label[data-left]").forEach((label) => {
-    label.style.left = `${Number(label.dataset.left)}%`;
-  });
-  canvas.querySelectorAll(".booking-block[data-left][data-width]").forEach((booking) => {
-    booking.style.left = `${Number(booking.dataset.left)}%`;
-    booking.style.width = `${Number(booking.dataset.width)}%`;
-  });
+function buildDayLabelCell(entry, court, compactName) {
+  const name = compactName ? entry.dayName.slice(0, 3) : entry.dayName;
+  const todayPill = entry.isToday && court === "A" ? '<em class="today-pill">Hari ini</em>' : "";
+  return `<div class="row-label">
+    <div class="row-day-meta">
+      <div class="row-day-top"><strong>${name}</strong>${todayPill}</div>
+      <span>${entry.dateLabel}</span>
+    </div>
+    <b class="court-badge court-${court.toLowerCase()}" aria-label="Lapangan ${court}">${court}</b>
+  </div>`;
 }
 
-function bookingBlock(booking) {
-  const start = new Date(booking.start_at);
-  const end = new Date(booking.end_at);
-  const startMinutes = jakartaTimeMinutes(start);
-  const durationMinutes = Math.round((end - start) / 60000);
-  const endMinutes = startMinutes + durationMinutes;
-  const leftPercent = scheduleLeftPercent(startMinutes);
-  const widthPercent = scheduleLeftPercent(endMinutes) - leftPercent;
-  const className = booking.priority ? `priority-${booking.priority}` : booking.booking_type === "basket" ? "basket" : "incidental";
-  return `<button class="booking-block ${className}" type="button" data-booking-id="${escapeHtml(booking.id)}" data-left="${leftPercent}" data-width="${widthPercent}" aria-label="${escapeHtml(booking.title)}, ${formatTime(booking.start_at)} sampai ${formatTime(booking.end_at)}">
+function buildDesktopV3Html(dayEntries) {
+  const layout = computeCompactLayout(state.bookings);
+  const gridLines = layout.ticks
+    .map((hour) => `<span class="grid-line" data-left="${layout.toPercent(hour * 60)}" aria-hidden="true"></span>`)
+    .join("");
+  const middayHeader = layout.middayWidth > 0.5
+    ? `<span class="midday-break midday-break-head" data-left="${layout.middayLeft}" data-width="${layout.middayWidth}" aria-hidden="true">${layout.hasMidday ? "11–15" : "SIANG"}</span>`
+    : "";
+  const middayLane = layout.middayWidth > 0.5
+    ? `<span class="midday-break" data-left="${layout.middayLeft}" data-width="${layout.middayWidth}" aria-hidden="true"></span>`
+    : "";
+
+  const tickLabels = layout.ticks
+    .map((hour, index) => {
+      const fullLabel = `${String(hour).padStart(2, "0")}:00`;
+      const minutes = hour * 60;
+      const isStart = index === 0 && minutes === layout.startMin;
+      const isAfterBreak = layout.middayWidth > 0.5 && minutes === layout.eStart;
+      const isLast = index === layout.ticks.length - 1;
+      const cls = [
+        "time-label",
+        isStart ? "time-label-start" : "",
+        isAfterBreak ? "time-label-after-break" : "",
+        isLast ? "time-label-end" : "",
+      ].filter(Boolean).join(" ");
+      return `<span class="${cls}" data-left="${layout.toPercent(minutes)}" aria-label="${fullLabel}" title="${fullLabel}">${fullLabel}</span>`;
+    })
+    .join("");
+
+  let html = `<div class="schedule-header"><div class="schedule-corner">Hari · Court</div><div class="time-axis">${middayHeader}${gridLines}${tickLabels}</div></div>`;
+
+  for (const entry of dayEntries) {
+    const baseClasses = [
+      entry.dayIndex === 0 ? "week-start" : "",
+      [2, 4, 6].includes(entry.dayIndex) ? "day-shaded" : "",
+      entry.isToday ? "is-today" : "",
+    ].filter(Boolean).join(" ");
+
+    for (const court of ["A", "B"]) {
+      const rowBookings = state.bookings.filter((booking) => booking.court_id === court && jakartaDateKey(booking.start_at) === entry.key);
+      const courtClass = `${court === "A" && entry.dayIndex > 0 ? " day-start" : ""}${entry.isToday ? (court === "A" ? " is-today-start" : " is-today-end") : ""}`;
+      html += `<div class="schedule-row ${baseClasses}${courtClass}">
+        ${buildDayLabelCell(entry, court, false)}
+        <div class="timeline-row">${middayLane}${gridLines}`;
+      for (const booking of rowBookings) {
+        const { startMinutes, endMinutes } = bookingRangeMinutes(booking);
+        const leftPercent = layout.toPercent(startMinutes);
+        const widthPercent = Math.max(0.8, layout.toPercent(endMinutes) - leftPercent);
+        html += bookingBlockHtml(booking, leftPercent, widthPercent);
+      }
+      html += `</div></div>`;
+    }
+  }
+  return html;
+}
+
+function buildMobileSplitHtml(dayEntries) {
+  let morningStart = 5 * 60 + 15;
+  let morningEnd = 11 * 60;
+  let eveningStart = 15 * 60;
+  let eveningEnd = 21 * 60;
+  const middayBookings = [];
+
+  for (const booking of state.bookings) {
+    const { startMinutes, endMinutes } = bookingRangeMinutes(booking);
+    if (startMinutes < 5 * 60 + 15) morningStart = 5 * 60;
+    if (startMinutes < 12 * 60) {
+      if (endMinutes > morningEnd && endMinutes <= 13 * 60) morningEnd = Math.ceil(endMinutes / 30) * 30;
+    } else if (startMinutes < 14 * 60 + 30) {
+      middayBookings.push(booking);
+    } else {
+      if (startMinutes < eveningStart) eveningStart = Math.floor(startMinutes / 30) * 30;
+      if (endMinutes > eveningEnd) eveningEnd = Math.min(22 * 60, Math.ceil(endMinutes / 30) * 30);
+    }
+  }
+
+  const sessions = [
+    {
+      title: "Sesi Pagi",
+      badge: `${formatMinutesLabel(morningStart === 5 * 60 + 15 ? 5 * 60 + 30 : morningStart)} – ${formatMinutesLabel(morningEnd)} WIB`,
+      minM: morningStart,
+      maxM: morningEnd,
+      filter: (b) => bookingRangeMinutes(b).startMinutes < 12 * 60,
+    },
+  ];
+
+  if (middayBookings.length > 0) {
+    sessions.push({
+      title: "Sesi Siang",
+      badge: "12:00 – 15:00 WIB",
+      minM: 12 * 60,
+      maxM: 15 * 60,
+      filter: (b) => {
+        const s = bookingRangeMinutes(b).startMinutes;
+        return s >= 12 * 60 && s < 14 * 60 + 30;
+      },
+    });
+  }
+
+  sessions.push({
+    title: "Sesi Sore & Malam",
+    badge: `${formatMinutesLabel(eveningStart)} – ${formatMinutesLabel(eveningEnd)} WIB`,
+    minM: eveningStart,
+    maxM: eveningEnd,
+    filter: (b) => bookingRangeMinutes(b).startMinutes >= 14 * 60 + 30,
+  });
+
+  return `<div class="split-sessions">${sessions.map((session) => buildSplitSessionCard(dayEntries, session)).join("")}</div>`;
+}
+
+function formatMinutesLabel(totalMinutes) {
+  const hr = Math.floor(totalMinutes / 60);
+  const mn = totalMinutes % 60;
+  return `${String(hr).padStart(2, "0")}:${String(mn).padStart(2, "0")}`;
+}
+
+function buildSplitSessionCard(dayEntries, session) {
+  const span = session.maxM - session.minM;
+  const hours = [];
+  for (let h = Math.ceil(session.minM / 60); h <= Math.floor(session.maxM / 60); h += 1) {
+    hours.push(h);
+  }
+  const toPercent = (m) => ((Math.min(Math.max(m, session.minM), session.maxM) - session.minM) / span) * 100;
+  const gridLines = hours
+    .map((h) => `<span class="grid-line" data-left="${toPercent(h * 60)}" aria-hidden="true"></span>`)
+    .join("");
+  const tickLabels = hours
+    .map((h, idx) => {
+      const label = `${String(h).padStart(2, "0")}:00`;
+      const isStart = idx === 0 && h * 60 === session.minM;
+      const isLast = idx === hours.length - 1;
+      const cls = [
+        "time-label",
+        isStart ? "time-label-start" : "",
+        isLast ? "time-label-end" : "",
+      ].filter(Boolean).join(" ");
+      return `<span class="${cls}" data-left="${toPercent(h * 60)}">${label}</span>`;
+    })
+    .join("");
+
+  let html = `<section class="split-session-card" aria-label="${session.title}">
+    <div class="split-session-bar"><strong>${session.title}</strong><span>${session.badge}</span></div>
+    <div class="schedule-header split-header"><div class="schedule-corner">Hari · Ct</div><div class="time-axis">${gridLines}${tickLabels}</div></div>`;
+
+  for (const entry of dayEntries) {
+    const baseClasses = [
+      entry.dayIndex === 0 ? "week-start" : "",
+      [2, 4, 6].includes(entry.dayIndex) ? "day-shaded" : "",
+      entry.isToday ? "is-today" : "",
+    ].filter(Boolean).join(" ");
+
+    for (const court of ["A", "B"]) {
+      const rowBookings = state.bookings.filter(
+        (booking) => booking.court_id === court && jakartaDateKey(booking.start_at) === entry.key && session.filter(booking)
+      );
+      const courtClass = `${court === "A" && entry.dayIndex > 0 ? " day-start" : ""}${entry.isToday ? (court === "A" ? " is-today-start" : " is-today-end") : ""}`;
+      html += `<div class="schedule-row split-row ${baseClasses}${courtClass}">
+        ${buildDayLabelCell(entry, court, true)}
+        <div class="timeline-row">${gridLines}`;
+      for (const booking of rowBookings) {
+        const { startMinutes, endMinutes } = bookingRangeMinutes(booking);
+        const leftPercent = toPercent(startMinutes);
+        const widthPercent = Math.max(2, toPercent(endMinutes) - leftPercent);
+        html += bookingBlockHtml(booking, leftPercent, widthPercent);
+      }
+      html += `</div></div>`;
+    }
+  }
+
+  html += `</section>`;
+  return html;
+}
+
+function bookingBlockHtml(booking, leftPercent, widthPercent) {
+  const className = bookingClassName(booking);
+  return `<button class="booking-block ${className}" type="button" data-booking-id="${escapeHtml(booking.id)}" data-left="${leftPercent}" data-width="${widthPercent}" data-inset="1" aria-label="${escapeHtml(booking.title)}, ${formatTime(booking.start_at)} sampai ${formatTime(booking.end_at)}">
     <strong>${escapeHtml(booking.title)}</strong><span>${formatTime(booking.start_at)}–${formatTime(booking.end_at)}</span>
   </button>`;
+}
+
+function applySchedulePositions(canvas) {
+  canvas.querySelectorAll("[data-left]").forEach((node) => {
+    const left = Number(node.dataset.left);
+    node.style.left = node.dataset.inset ? `calc(${left}% + 1px)` : `${left}%`;
+    if (node.dataset.width !== undefined) {
+      const width = Number(node.dataset.width);
+      node.style.width = node.dataset.inset ? `calc(${width}% - 2px)` : `${width}%`;
+    }
+  });
 }
 
 async function onScheduleClick(event) {
