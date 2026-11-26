@@ -7,7 +7,7 @@
 
   var SUPABASE_URL = "https://uakhvqjqyplkuxfleggk.supabase.co";
   var SUPABASE_KEY = "sb_publishable_5nSODU833YAt89vnbNaUGA_MtqGYGAR";
-  var TARGET_ESTIMATE = 800076289;
+  var TARGET_ESTIMATE = 1000000000;
   var BULAN = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
   var allDonationRows = [];
 
@@ -229,14 +229,14 @@
       mainBar.value = clamped;
     }
     if (mainPct) {
-      mainPct.textContent = donationFailed ? "—" : pct + "% dari 2 paket inti (Rp800,1 jt)";
+      mainPct.textContent = donationFailed ? "—" : pct + "% dari estimasi total ~Rp1 M";
     }
     if (mainRemaining) {
       mainRemaining.textContent = donationFailed
         ? "Data belum tersedia"
         : (remaining > 0
-            ? "Selisih ke 2 paket inti: " + formatRupiah(remaining) + " (diluar signage & existing gate)"
-            : "Kebutuhan 2 paket inti Rp800,1 jt telah tercapai");
+            ? "Selisih ke perkiraan ~Rp1 M: " + formatRupiah(remaining)
+            : "Perkiraan total Rp1 M telah tercapai");
     }
 
     var homeBar = document.getElementById("home-progress-bar");
@@ -246,7 +246,7 @@
       homeBar.value = clamped;
     }
     if (homePct) {
-      homePct.textContent = donationFailed ? "—" : pct + "% dari paket inti";
+      homePct.textContent = donationFailed ? "—" : pct + "% dari ~Rp1 M";
     }
   }
 
