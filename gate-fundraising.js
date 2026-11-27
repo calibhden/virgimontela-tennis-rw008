@@ -48,7 +48,7 @@
   }
 
   async function fetchPublishedDonations() {
-    var res = await fetch("/gate-fundraising-donations.json?v=20261126-2");
+    var res = await fetch("/gate-fundraising-donations.json?v=20261127-1");
     if (!res.ok) throw new Error("HTTP " + res.status);
     var data = await res.json();
     return Array.isArray(data) ? data : (data.rows || []);
