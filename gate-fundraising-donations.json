@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-22",
+  "updated_at": "2026-11-27",
   "rows": [
     {
       "tanggal": "2026-10-02",
@@ -567,6 +567,49 @@
       "rekening_penampungan": "Rek RT 02",
       "jumlah": 20000000,
       "is_sample": false
+    },
+    {
+      "tanggal": "2026-11-23",
+      "donatur": "Sudarsono DRS",
+      "rekening_penampungan": "Rek RT 02",
+      "jumlah": 2500000,
+      "is_sample": false
+    },
+    {
+      "tanggal": "2026-11-23",
+      "donatur": "Hetty S/Gracianti G5/1-43",
+      "rekening_penampungan": "Rek RT 02",
+      "jumlah": 1000000,
+      "is_sample": false
+    },
+    {
+      "tanggal": "2026-11-24",
+      "donatur": "Handy H B7/10",
+      "rekening_penampungan": "Rek RT 02",
+      "jumlah": 500000,
+      "is_sample": false
+    },
+    {
+      "tanggal": "2026-11-24",
+      "donatur": "Benny SG C2/8",
+      "rekening_penampungan": "Rek RT 02",
+      "jumlah": 1000000,
+      "is_sample": false
+    },
+    {
+      "tanggal": "2026-11-24",
+      "donatur": "Hetty Soetikno/Grace Soetikno G6/1-21",
+      "rekening_penampungan": "Rek RT 02",
+      "jumlah": 1000000,
+      "is_sample": false
+    },
+    {
+      "tanggal": "2026-11-26",
+      "donatur": "Anonim",
+      "rekening_penampungan": "Rek RT 02",
+      "jumlah": 35000000,
+      "is_sample": false,
+      "catatan_internal": "AH-35JT-2611"
     }
   ]
 }
